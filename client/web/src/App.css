@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css?family=Baloo+Thambi+2&display=swap');
+
+.App {
+  text-align: center;
+  font-family: 'Baloo Thambi 2', cursive;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.nav {
+  justify-content: flex-end;
+}
+
+.signUpForm {
+  display: grid;
+}
+
+.signUpLabel {
+  text-align: left;
+}
+
+.signUpInput {
+  width: 400px;
+}
+
+#signUpSubmit {
+  margin-bottom: 20px;
+}
+
+.horse-image {
+  height: 100px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.header-title {
+  margin-top: 10px;
+}
