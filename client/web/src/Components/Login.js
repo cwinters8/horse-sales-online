@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyledFirebaseAuth} from 'react-firebaseui';
 
-const SignUp = props => {
+const Login = props => {
 
   const uiConfig = {
     signInFlow: 'redirect',
@@ -20,4 +20,4 @@ const SignUp = props => {
   );
 }
 
-export default SignUp;
+export default Login;

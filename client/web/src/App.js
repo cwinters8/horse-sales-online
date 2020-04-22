@@ -1,7 +1,6 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
-import {Nav, NavLink, Container, Row, Col} from 'reactstrap';
-import aes from 'crypto-js/aes';
+import {Nav, NavLink, NavItem, Container, Row, Col} from 'reactstrap';
 import firebase from 'firebase/app';
 import 'firebase/analytics';
 import 'firebase/auth';
@@ -35,16 +34,45 @@ firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
 const App = () => {
-  // encrypts a given string using a secret key and returns the encrypted value
-  const encrypt = string => {
-    const encrypted = aes.encrypt(string, process.env.REACT_APP_SECRET_KEY).toString();
-    return encrypted;
+  const [userName, setUserName] = useState(null);
+
+  // check if a user is signed in
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+      setUserName(user.displayName);
+    } else {
+      setUserName(null);
+    }
+  });
+
+  const signOut = () => {
+    firebase.auth().signOut().then(() => {
+      // route to home on sign out for now
+      window.location.href = '/';
+    }); 
   }
 
-  // decrypts an encrypted value to its original string
-  const decrypt = encrypted => {
-    const decrypted = aes.decrypt(encrypted, process.env.REACT_APP_SECRET_KEY).toString();
-    return decrypted;
+  const NavHeader = () => {
+    if (userName) {
+      return (
+        <Nav>
+          <NavItem>
+            <NavLink>{userName}</NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink onClick={signOut} href="#">Sign Out</NavLink>
+          </NavItem>
+        </Nav>
+      );
+    } else {
+      return (
+        <Nav>
+          <NavItem>
+            <NavLink href="/login">Login</NavLink>
+          </NavItem>
+        </Nav>
+      )
+    }
   }
 
   return (
@@ -53,9 +81,7 @@ const App = () => {
         <Container>
           <Row>
             <Col>
-              <Nav>
-                <NavLink href="/login">Login</NavLink>
-              </Nav>
+              <NavHeader />
             </Col>
           </Row>
           <Row>
@@ -74,7 +100,7 @@ const App = () => {
         <BrowserRouter>
           <Switch>
             {/* Login */}
-            <Route path="/login" render={() => <Login encrypt={encrypt} decrypt={decrypt} firebase={firebase} />} />
+            <Route path="/login" render={() => <Login firebase={firebase} />} />
           </Switch>
         </BrowserRouter>
       </header>
