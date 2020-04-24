@@ -9,5 +9,5 @@ steps:
     dir: 'client/web'
   # deploy front end to Firebase
   - name: 'gcr.io/$PROJECT_ID/firebase'
-    args: ['deploy', '--project', '$PROJECT_ID']
+    args: ['deploy', '--project', '$PROJECT_ID', '--only=hosting']
     dir: 'client/web'
