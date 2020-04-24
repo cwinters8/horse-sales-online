@@ -1,12 +1,12 @@
 steps:
   # build env file with secrets
-  - name: bash
+  - name: ubuntu
     args: ['echo "REACT_APP_FIREBASE_APIKEY=" > .env']
     dir: 'client/web'
   - name: gcr.io/cloud-builders/gcloud
     args: [ 'secrets versions access latest --secret=REACT_APP_FIREBASE_APIKEY >> .env' ]
     dir: 'client/web'
-  - name: bash
+  - name: ubuntu
     args: ['echo "REACT_APP_FIREBASE_APPID=" >> .env']
     dir: 'client/web'
   - name: gcr.io/cloud-builders/gcloud
