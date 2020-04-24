@@ -1,16 +1,20 @@
 steps:
   # build env file with secrets
-  - name: ubuntu
-    args: ['echo', '"REACT_APP_FIREBASE_APIKEY=" > .env']
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: '/bin/bash'
+    args: ['-c', 'echo "REACT_APP_FIREBASE_APIKEY=" > .env']
     dir: 'client/web'
   - name: gcr.io/cloud-builders/gcloud
-    args: [ 'secrets', 'versions access latest --secret=REACT_APP_FIREBASE_APIKEY >> .env' ]
-    dir: 'client/web'
-  - name: ubuntu
-    args: ['echo', '"REACT_APP_FIREBASE_APPID=" >> .env']
+    entrypoint: '/bin/bash'
+    args: ['-c', 'secrets versions access latest --secret=REACT_APP_FIREBASE_APIKEY >> .env']
     dir: 'client/web'
   - name: gcr.io/cloud-builders/gcloud
-    args: [ 'secrets', 'versions access latest --secret=REACT_APP_FIREBASE_APPID >> .env' ]
+    entrypoint: '/bin/bash'
+    args: ['-c', 'echo "REACT_APP_FIREBASE_APPID=" >> .env']
+    dir: 'client/web'
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: '/bin/bash'
+    args: ['-c', 'secrets versions access latest --secret=REACT_APP_FIREBASE_APPID >> .env']
     dir: 'client/web'
   # install front end dependencies
   - name: 'gcr.io/cloud-builders/npm'
