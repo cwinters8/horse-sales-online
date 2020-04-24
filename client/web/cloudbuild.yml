@@ -2,7 +2,7 @@ steps:
   # build env file with secrets
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: '/bin/bash'
-    args: ['-c', 'echo "REACT_APP_FIREBASE_APIKEY=" > .env']
+    args: ['-c', 'echo -n "REACT_APP_FIREBASE_APIKEY=" > .env']
     dir: 'client/web'
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: '/bin/bash'
@@ -10,7 +10,7 @@ steps:
     dir: 'client/web'
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: '/bin/bash'
-    args: ['-c', 'echo "REACT_APP_FIREBASE_APPID=" >> .env']
+    args: ['-c', 'echo -n "REACT_APP_FIREBASE_APPID=" >> .env']
     dir: 'client/web'
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: '/bin/bash'
