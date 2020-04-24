@@ -11,6 +11,8 @@ import './App.css';
 
 // components
 import Login from './Components/Login';
+// import NewHorse from './Components/NewHorse';
+import Main from './Components/Main';
 
 // images
 import jumping from './images/jumping.png';
@@ -35,6 +37,7 @@ firebase.analytics();
 
 const App = () => {
   const [userName, setUserName] = useState(null);
+  const [redirect, setRedirect] = useState(null);
 
   // check if a user is signed in
   firebase.auth().onAuthStateChanged(user => {
@@ -94,13 +97,14 @@ const App = () => {
             </Col>
           </Row>
           <Row>
-            <Col><h1 className="header-title">Horse Sales Online</h1></Col>
+            <Col><h1 className="header-title"><a id="title" href="/">Horse Sales Online</a></h1></Col>
           </Row>
         </Container>
         <BrowserRouter>
           <Switch>
-            {/* Login */}
-            <Route path="/login" render={() => <Login firebase={firebase} />} />
+            <Route exact path="/" render={() => <Main />} />
+            <Route path="/login" render={() => <Login firebase={firebase} redirect={redirect} />} />
+            {/* <Route path="/new-horse" render={() => <NewHorse firebase={firebase} user={userName} />} /> */}
           </Switch>
         </BrowserRouter>
       </header>

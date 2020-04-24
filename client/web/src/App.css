@@ -19,22 +19,6 @@
   justify-content: flex-end;
 }
 
-.signUpForm {
-  display: grid;
-}
-
-.signUpLabel {
-  text-align: left;
-}
-
-.signUpInput {
-  width: 400px;
-}
-
-#signUpSubmit {
-  margin-bottom: 20px;
-}
-
 .horse-image {
   height: 100px;
   margin-left: 5px;
@@ -43,4 +27,17 @@
 
 .header-title {
   margin-top: 10px;
+}
+
+#title {
+  color: white;
+}
+
+#title:hover {
+  text-decoration: none;
+}
+
+#coming-soon-img {
+  max-width: 100%;
+  margin-top: 20px;
 }
