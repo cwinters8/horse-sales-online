@@ -14,7 +14,7 @@ steps:
     dir: 'client/web'
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: '/bin/bash'
-    args: ['-c', 'gcloud secrets versions access latest --secret=REACT_APP_FIREBASE_APPID >> .env']
+    args: ['-c', 'gcloud secrets versions access latest --secret=REACT_APP_FIREBASE_APPID >> .env; cat .env']
     dir: 'client/web'
   # install front end dependencies
   - name: 'gcr.io/cloud-builders/npm'
