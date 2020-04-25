@@ -1,11 +1,14 @@
 import React from 'react';
 import {Form, Input, Label} from 'reactstrap';
 
-const NewHorse = props => {
+const NewHorse = () => {
   return (
-    <Form>
-      <Label for="name">Horse's Name</Label>
+    <Form className="horse-form">
+      <Label className="horse-form-label" for="name">Horse's Name</Label>
       <Input id="name" type="text" />
+
+      <Label className="horse-form-label" for="breed">Breed</Label>
+      <Input id="breed" type="text" />
     </Form>
   )
 }
