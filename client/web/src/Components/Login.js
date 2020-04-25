@@ -2,16 +2,16 @@ import React from 'react';
 import {StyledFirebaseAuth} from 'react-firebaseui';
 
 const Login = props => {
-
   const uiConfig = {
     signInFlow: 'redirect',
-    signInSuccessUrl: props.redirect || '/',
+    signInSuccessUrl: localStorage.getItem('continue') || '/',
     signInOptions: [
       props.firebase.auth.GoogleAuthProvider.PROVIDER_ID,
       props.firebase.auth.EmailAuthProvider.PROVIDER_ID,
       props.firebase.auth.FacebookAuthProvider.PROVIDER_ID
     ]
   }
+  // localStorage.removeItem('continue');
 
   return (
     <div>

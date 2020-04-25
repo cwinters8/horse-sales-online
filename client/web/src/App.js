@@ -11,7 +11,8 @@ import './App.css';
 
 // components
 import Login from './Components/Login';
-// import NewHorse from './Components/NewHorse';
+import PrivateRoute from './Components/PrivateRoute';
+import NewHorse from './Components/NewHorse';
 import Main from './Components/Main';
 
 // images
@@ -37,14 +38,15 @@ firebase.analytics();
 
 const App = () => {
   const [userName, setUserName] = useState(null);
-  const [redirect, setRedirect] = useState(null);
 
   // check if a user is signed in
   firebase.auth().onAuthStateChanged(user => {
     if (user) {
       setUserName(user.displayName);
+      window.localStorage.setItem('user', user);
     } else {
       setUserName(null);
+      window.localStorage.removeItem('user');
     }
   });
 
@@ -103,8 +105,8 @@ const App = () => {
         <BrowserRouter>
           <Switch>
             <Route exact path="/" render={() => <Main />} />
-            <Route path="/login" render={() => <Login firebase={firebase} redirect={redirect} />} />
-            {/* <Route path="/new-horse" render={() => <NewHorse firebase={firebase} user={userName} />} /> */}
+            <Route path="/login" render={() => <Login firebase={firebase} />} />
+            <PrivateRoute firebase={firebase} path="/new-horse" render={() => <NewHorse firebase={firebase} />} />
           </Switch>
         </BrowserRouter>
       </header>
