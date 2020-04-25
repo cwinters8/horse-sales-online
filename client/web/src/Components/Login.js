@@ -7,8 +7,7 @@ const Login = props => {
     signInSuccessUrl: localStorage.getItem('continue') || '/',
     signInOptions: [
       props.firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-      props.firebase.auth.EmailAuthProvider.PROVIDER_ID,
-      props.firebase.auth.FacebookAuthProvider.PROVIDER_ID
+      props.firebase.auth.EmailAuthProvider.PROVIDER_ID
     ]
   }
   // localStorage.removeItem('continue');
