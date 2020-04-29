@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Baloo+Thambi+2&display=swap');
 
+:root {
+  background-color: #282c34;
+}
+
 .App {
   text-align: center;
   font-family: 'Baloo Thambi 2', cursive;
@@ -44,11 +48,51 @@
 
 .horse-form {
   text-align: left;
-  width: 30%;
+  width: 100%;
+  display: grid;
   min-width: 300px;
   max-width: 100%;
 }
 
+.horse-form-container {
+  width: 30%;
+  justify-self: center;
+}
+
 .horse-form-label {
   padding-top: 10px;
+  justify-self: center;
+}
+
+.horse-form-select {
+  background-color: white;
+  color: black;
+  height: calc(1.5em + .75rem + 2px);
+  border-radius: .25rem;
+}
+
+.image-preview-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.image-preview {
+  max-height: 200px;
+  margin-left: 20px;
+  margin-right: 5px;
+  margin-bottom: 15px;
+}
+
+.image-preview-individual-div {
+  display: flex;
+}
+
+.x-circle {
+  align-self: flex-start;
+
+}
+
+.x-circle:hover {
+  cursor: pointer;
 }

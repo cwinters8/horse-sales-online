@@ -5,6 +5,7 @@ import firebase from 'firebase/app';
 import 'firebase/analytics';
 import 'firebase/auth';
 import 'firebase/firestore';
+import 'firebase/storage';
 
 // styles
 import './App.css';
@@ -106,7 +107,7 @@ const App = () => {
           <Switch>
             <Route exact path="/" render={() => <Main />} />
             <Route path="/login" render={() => <Login firebase={firebase} />} />
-            <PrivateRoute path="/new-horse" render={() => <NewHorse />} />
+            <PrivateRoute path="/new-horse" render={() => <NewHorse firebase={firebase} />} />
           </Switch>
         </BrowserRouter>
       </header>
