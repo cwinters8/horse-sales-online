@@ -21,44 +21,49 @@ const NewHorse = props => {
   const [uploadError, setUploadError] = useState(false);
 
   const onImageChange = event => {
+    const pictures = [];
     for (let i=0; i < event.target.files.length; i++) {
-      const file = event.target.files[i];
-      // resize image
-      Resizer.imageFileResizer(
-        file,
-        900,
-        900,
-        'JPEG',
-        100,
-        0,
-        uri => {
-          firebaseUpload(uri);
-        },
-        'blob'
-      );
+      pictures.push(event.target.files[i])
     }
-  }
-
-  const firebaseUpload = uri => {
-    const userID = props.firebase.auth().currentUser.uid;
-    const fileID = uuidv4();
-    const fileName = `${fileID}.jpg`;
-    // upload to firebase
-    const imageRef = storageRef.child(`${userID}/${fileName}`);
-    const uploadTask = imageRef.put(uri);
-    uploadTask.on('state_changed', snapshot => {
-      // track upload progress
-      setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-    }, error => {
-      // if upload fails
-      setUploadError(true);
-      console.log(`Upload error: ${error}`);
-    }, () => {
-      // if upload succeeds
-      uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-        setImages([...images, downloadURL]);
+    Promise.all(pictures.map(picture => {
+      return new Promise((resolve, reject) => {
+        // resize image
+        Resizer.imageFileResizer(
+          picture,
+          900,
+          900,
+          'JPEG',
+          100,
+          0,
+          uri => {
+            const userID = props.firebase.auth().currentUser.uid;
+            const fileID = uuidv4();
+            const fileName = `${fileID}.jpg`;
+            // upload to firebase
+            const imageRef = storageRef.child(`${userID}/${fileName}`);
+            const uploadTask = imageRef.put(uri);
+            uploadTask.on('state_changed', snapshot => {
+              // track upload progress
+              setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+            }, error => {
+              // if upload fails
+              setUploadError(true);
+              console.log(`Upload error: ${error}`);
+              reject(error);
+            }, () => {
+              // if upload succeeds
+              uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+                resolve(downloadURL);
+              });
+            });
+          },
+          'blob'
+        );
       });
-    });
+    })).then(URLs => {
+      console.log(URLs);
+      setImages([...images, ...URLs]);
+    })
   }
 
   const ImageError = () => {
