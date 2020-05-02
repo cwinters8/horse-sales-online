@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Form, Input, Label} from 'reactstrap';
+import {Form, Input, Label, Progress} from 'reactstrap';
 import Select from 'react-select';
 import {v4 as uuidv4} from 'uuid';
 import Resizer from 'react-image-file-resizer';
@@ -17,9 +17,10 @@ const breeds = breedList.map((breed, index) => {
 const NewHorse = props => {
   const storageRef = props.firebase.storage().ref('horse-photos/');
   const [images, setImages] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState(-1);
+  const [uploadError, setUploadError] = useState(false);
 
   const onImageChange = event => {
-    const userID = props.firebase.auth().currentUser.uid;
     for (let i=0; i < event.target.files.length; i++) {
       const file = event.target.files[i];
       // resize image
@@ -31,30 +32,51 @@ const NewHorse = props => {
         100,
         0,
         uri => {
-          const fileID = uuidv4();
-          const fileName = `${fileID}.jpg`;
-          // upload to firebase
-          const imageRef = storageRef.child(`${userID}/${fileName}`);
-          const uploadTask = imageRef.put(uri);
-          uploadTask.on('state_changed', snapshot => {
-            // track upload progress
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log(`Upload is ${progress}% done`);
-          }, error => {
-            // if upload fails
-            console.log(`Upload error: ${error}`);
-          }, () => {
-            // if upload succeeds
-            uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-              console.log(`Upload finished successfully. Download URL: ${downloadURL}`);
-              setImages([...images, downloadURL]);
-            });
-          });
+          firebaseUpload(uri);
         },
-        "blob"
+        'blob'
       );
     }
   }
+
+  const firebaseUpload = uri => {
+    const userID = props.firebase.auth().currentUser.uid;
+    const fileID = uuidv4();
+    const fileName = `${fileID}.jpg`;
+    // upload to firebase
+    const imageRef = storageRef.child(`${userID}/${fileName}`);
+    const uploadTask = imageRef.put(uri);
+    uploadTask.on('state_changed', snapshot => {
+      // track upload progress
+      setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+    }, error => {
+      // if upload fails
+      setUploadError(true);
+      console.log(`Upload error: ${error}`);
+    }, () => {
+      // if upload succeeds
+      uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+        setImages([...images, downloadURL]);
+      });
+    });
+  }
+
+  const ImageError = () => {
+    if (uploadError) {
+      return <p className="error">Error uploading image. Please try again.</p>
+    } else {
+      return null;
+    }
+  }
+
+  const UploadProgress = props => {
+    if (uploadProgress >= 0) {
+      return <Progress value={props.value} />
+    } else {
+      return null;
+    }
+  }
+
   return (
     <Form className="horse-form">
       {/* Ad Title */}
@@ -76,6 +98,8 @@ const NewHorse = props => {
       <ImagePreview images={images} setImages={setImages} />
       <div className="horse-form-container">
         <Input className="horse-form-input" type="file" onChange={onImageChange} multiple />
+        <UploadProgress value={uploadProgress} />
+        <ImageError />
 
       {/* Price */}
 
