@@ -6,6 +6,7 @@ const ImagePreview = props => {
   const removeImage = imageIndex => {
     const cleanedImages = images.splice(imageIndex, 1);
     props.setImages(cleanedImages);
+    // TODO: remove image from Firebase
   }
   return (
     <div className="image-preview-container">

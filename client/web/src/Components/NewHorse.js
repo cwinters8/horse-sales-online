@@ -23,7 +23,12 @@ const NewHorse = props => {
   const onImageChange = event => {
     const pictures = [];
     for (let i=0; i < event.target.files.length; i++) {
-      pictures.push(event.target.files[i])
+      const file = event.target.files[i];
+      if (file['type'].split('/')[0] === 'image') {
+        pictures.push(file);
+      } else {
+        alert('The file you attempted to upload is not an image. Please select only image files and try again.');
+      }
     }
     Promise.all(pictures.map(picture => {
       return new Promise((resolve, reject) => {
@@ -44,6 +49,7 @@ const NewHorse = props => {
             const uploadTask = imageRef.put(uri);
             uploadTask.on('state_changed', snapshot => {
               // track upload progress
+              // TODO: figure out how to track upload progress for each individual image
               setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
             }, error => {
               // if upload fails
@@ -61,9 +67,8 @@ const NewHorse = props => {
         );
       });
     })).then(URLs => {
-      console.log(URLs);
       setImages([...images, ...URLs]);
-    })
+    });
   }
 
   const ImageError = () => {
@@ -82,6 +87,7 @@ const NewHorse = props => {
     }
   }
 
+  // TODO: persist input data across sessions in case the user refreshes the page
   return (
     <Form className="horse-form">
       {/* Ad Title */}
@@ -102,7 +108,7 @@ const NewHorse = props => {
       </div>
       <ImagePreview images={images} setImages={setImages} />
       <div className="horse-form-container">
-        <Input className="horse-form-input" type="file" onChange={onImageChange} multiple />
+        <Input className="horse-form-input" type="file" onChange={onImageChange} multiple accept="image/*" />
         <UploadProgress value={uploadProgress} />
         <ImageError />
 
