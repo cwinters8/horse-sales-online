@@ -44,8 +44,9 @@ const NewHorse = props => {
             const userID = props.firebase.auth().currentUser.uid;
             const fileID = uuidv4();
             const fileName = `${fileID}.jpg`;
+            const filePath = `${userID}/${fileName}`;
             // upload to firebase
-            const imageRef = storageRef.child(`${userID}/${fileName}`);
+            const imageRef = storageRef.child(filePath);
             const uploadTask = imageRef.put(uri);
             uploadTask.on('state_changed', snapshot => {
               // track upload progress
@@ -59,15 +60,18 @@ const NewHorse = props => {
             }, () => {
               // if upload succeeds
               uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-                resolve(downloadURL);
+                resolve({
+                  path: filePath,
+                  url: downloadURL
+                });
               });
             });
           },
           'blob'
         );
       });
-    })).then(URLs => {
-      setImages([...images, ...URLs]);
+    })).then(imageData => {
+      setImages([...images, ...imageData]);
     });
   }
 
@@ -106,7 +110,7 @@ const NewHorse = props => {
       {/* Photo(s) */}
         <Label className="horse-form-label" for="photos">Upload Photo(s)</Label>
       </div>
-      <ImagePreview images={images} setImages={setImages} />
+      <ImagePreview images={images} setImages={setImages} firebaseStorageRef={storageRef} />
       <div className="horse-form-container">
         <Input className="horse-form-input" type="file" onChange={onImageChange} multiple accept="image/*" />
         <UploadProgress value={uploadProgress} />
