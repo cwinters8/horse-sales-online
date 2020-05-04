@@ -26,13 +26,13 @@ import trail from './images/trailhorse.png';
 // firebase config
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_APIKEY,
-  authDomain: "horse-sales-online.firebaseapp.com",
-  databaseURL: "https://horse-sales-online.firebaseio.com",
-  projectId: "horse-sales-online",
-  storageBucket: "horse-sales-online.appspot.com",
-  messagingSenderId: "305569763111",
+  authDomain: process.env.REACT_APP_FIREBASE_AUTHDOMAIN,
+  databaseURL: process.env.REACT_APP_FIREBASE_DATABASEURL,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECTID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGEBUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGINGSENDERID,
   appId: process.env.REACT_APP_FIREBASE_APPID,
-  measurementId: "G-T7RWV4KJCF"
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENTID
 };
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
