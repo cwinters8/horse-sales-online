@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Form, Input, Label, Progress} from 'reactstrap';
+import {Form, Input, Label} from 'reactstrap';
 import Select from 'react-select';
 import {v4 as uuidv4} from 'uuid';
 import Resizer from 'react-image-file-resizer';
@@ -17,7 +17,6 @@ const breeds = breedList.map((breed, index) => {
 const NewHorse = props => {
   const storageRef = props.firebase.storage().ref('horse-photos/');
   const [images, setImages] = useState([]);
-  const [uploadProgress, setUploadProgress] = useState(-1);
   const [uploadError, setUploadError] = useState(false);
 
   const onImageChange = event => {
@@ -51,7 +50,7 @@ const NewHorse = props => {
             uploadTask.on('state_changed', snapshot => {
               // track upload progress
               // TODO: figure out how to track upload progress for each individual image
-              setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+              // setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
             }, error => {
               // if upload fails
               setUploadError(true);
@@ -61,6 +60,7 @@ const NewHorse = props => {
               // if upload succeeds
               uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
                 resolve({
+                  id: fileID,
                   path: filePath,
                   url: downloadURL
                 });
@@ -75,17 +75,24 @@ const NewHorse = props => {
     });
   }
 
+  const removeImage = imageIndex => {
+    // remove image from Firebase
+    const imageRef = storageRef.child(images[imageIndex].path);
+    imageRef.delete().then(() => {
+      // remove image from preview
+      // first make a copy of the images state to update with
+      const imagesToSplice = [...images];
+      imagesToSplice.splice(imageIndex, 1);
+      setImages(imagesToSplice);
+    }).catch(error => {
+      alert('Failed to delete image - please try again.');
+      console.log(error);
+    });
+  }
+
   const ImageError = () => {
     if (uploadError) {
       return <p className="error">Error uploading image. Please try again.</p>
-    } else {
-      return null;
-    }
-  }
-
-  const UploadProgress = props => {
-    if (uploadProgress >= 0) {
-      return <Progress value={props.value} />
     } else {
       return null;
     }
@@ -110,10 +117,9 @@ const NewHorse = props => {
       {/* Photo(s) */}
         <Label className="horse-form-label" for="photos">Upload Photo(s)</Label>
       </div>
-      <ImagePreview images={images} setImages={setImages} firebaseStorageRef={storageRef} />
+      <ImagePreview images={images} removeImage={removeImage} firebaseStorageRef={storageRef} />
       <div className="horse-form-container">
         <Input className="horse-form-input" type="file" onChange={onImageChange} multiple accept="image/*" />
-        <UploadProgress value={uploadProgress} />
         <ImageError />
 
       {/* Price */}
