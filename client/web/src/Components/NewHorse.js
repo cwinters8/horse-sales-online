@@ -1,11 +1,13 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Form, Input, Label} from 'reactstrap';
 import Select from 'react-select';
 import {v4 as uuidv4} from 'uuid';
 import Resizer from 'react-image-file-resizer';
+import countryList from 'react-select-country-list';
 
 import ImagePreview from './ImagePreview';
 
+// for horse breed select
 import breedList from '../data/horseBreeds.json';
 const breeds = breedList.map((breed, index) => {
   return {
@@ -14,10 +16,22 @@ const breeds = breedList.map((breed, index) => {
   }
 });
 
+// for country select
+const countries = countryList().setLabel('VN', 'Vietnam').getData();
+
+// API URL for Google Maps Geocoding
+const geocodeAPI = "https://maps.googleapis.com/maps/api/geocode/json";
+
 const NewHorse = props => {
   const storageRef = props.firebase.storage().ref('horse-photos/');
   const [images, setImages] = useState([]);
   const [uploadError, setUploadError] = useState(false);
+  // location data
+  const [zipCode, setZipCode] = useState(null);
+  const [country, setCountry] = useState(null);
+  const [states, setStates] = useState([]);
+  const [state, setState] = useState(null);
+  const [city, setCity] = useState(null);
 
   const onImageChange = event => {
     const pictures = [];
@@ -90,6 +104,38 @@ const NewHorse = props => {
     });
   }
 
+  const zipCodeLookup = event => {
+    const zip = event.target.value;
+    setZipCode(zip);
+    fetch(`${geocodeAPI}?address=${zip}&key=${props.firebaseAPIKey}`).then(res => {
+      return res.json();
+    }).then(response => {
+      if (response.results[0]) {
+        const addressComponents = response.results[0].address_components;
+        // console.log(addressComponents);
+        // populate location state
+        addressComponents.forEach((component, index) => {
+          if (component.types[0] === 'country') {
+            setCountry(component.long_name);
+          }
+        });
+      } else {
+        setCountry(null);
+        throw('Invalid zip code');
+      }
+    }).catch(error => {
+      console.error(error);
+    });
+  }
+
+  useEffect(() => {
+    if (country) {
+      console.log(country);
+      // get a list of states
+      // TODO: Next thing to figure out - use Google Places Autocomplete? Would just be a single field that would return a city, state, country, etc
+    }
+  }, [country]);
+
   const ImageError = () => {
     if (uploadError) {
       return <p className="error">Error uploading image. Please try again.</p>
@@ -101,20 +147,20 @@ const NewHorse = props => {
   // TODO: persist input data across sessions in case the user refreshes the page
   return (
     <Form className="horse-form">
-      {/* Ad Title */}
       <div className="horse-form-container">
+        {/* Ad Title */}
         <Label className="horse-form-label" for="ad-title">Title</Label>
         <Input className="horse-form-input" id="ad-title" type="text" />
 
-      {/* Name */}
+        {/* Name */}
         <Label className="horse-form-label" for="name">Horse's Name</Label>
         <Input className="horse-form-input" id="name" type="text" />
 
-      {/* Breed */}
+        {/* Breed */}
         <Label className="horse-form-label" for="breed">Breed</Label>
         <Select className="horse-form-select horse-form-input" options={breeds} isMulti={true} />
 
-      {/* Photo(s) */}
+        {/* Photo(s) */}
         <Label className="horse-form-label" for="photos">Upload Photo(s)</Label>
       </div>
       <ImagePreview images={images} removeImage={removeImage} firebaseStorageRef={storageRef} />
@@ -122,13 +168,34 @@ const NewHorse = props => {
         <Input className="horse-form-input" type="file" onChange={onImageChange} multiple accept="image/*" />
         <ImageError />
 
-      {/* Price */}
+        {/* Price */}
+        <Label className="horse-form-label" for="price">Price</Label>
+        {/* TODO: add blur listener to convert input to include dollar sign, add commas, and round to the nearest dollar */}
+        <Input className="horse-form-input" id="price" type="text" />
 
-      {/* Location */}
+        {/* Location */}
+        {/* TODO: add option to get current location */}
+        {/* TODO: auto-populate city/state/country when zip code is entered */}
+        <Label className="horse-form-label" for="zip">Zip Code</Label>
+        <Input className="horse-form-input" id="zip" type="text" onBlur={zipCodeLookup} />
 
-      {/* Height */}
+        <Label className="horse-form-label" for="country">Country</Label>
+        <Select className="horse-form-select horse-form-input" options={countries} value={countries.find(option => option.label === country)} />
 
-      {/* Description */}
+        <Label className="horse-form-label" for="city">City</Label>
+        <Input className="horse-form-input" id="city" type="text" />
+
+        <Label className="horse-form-label" for="state">State</Label>
+        <Select className="horse-form-input" id="state" options={states} />        
+
+        {/* Height */}
+        {/* TODO: validate height input */}
+        <Label className="horse-form-label" for="height">Height</Label>
+        <Input className="horse-form-input" id="height" type="number" />
+
+        {/* Description */}
+        <Label className="horse-form-label" for="desc">Description</Label>
+        <Input className="horse-form-input" id="desc" type="textarea" />
       </div>
     </Form>
   )

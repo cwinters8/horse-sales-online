@@ -107,7 +107,7 @@ const App = () => {
           <Switch>
             <Route exact path="/" render={() => <Main />} />
             <Route path="/login" render={() => <Login firebase={firebase} />} />
-            <PrivateRoute path="/new-horse" render={() => <NewHorse firebase={firebase} />} />
+            <PrivateRoute path="/new-horse" render={() => <NewHorse firebase={firebase} firebaseAPIKey={firebaseConfig.apiKey} />} />
           </Switch>
         </BrowserRouter>
       </header>
