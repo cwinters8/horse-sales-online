@@ -12,6 +12,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-firebaseui": "^4.1.0",
+    "react-google-places-autocomplete": "^2.0.5",
     "react-icons": "^3.10.0",
     "react-image-file-resizer": "^0.2.3",
     "react-router-dom": "^5.1.2",

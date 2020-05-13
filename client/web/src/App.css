@@ -93,6 +93,33 @@
 
 }
 
-.x-circle:hover {
+.x-circle:hover, .location-icon:hover {
   cursor: pointer;
+}
+
+.google-places-autocomplete > input {
+  width: 100%;
+  height: calc(1.5em + .75rem + 2px);
+  border-radius: .25rem;
+}
+
+.google-places-autocomplete__suggestion:hover {
+  background-color: lightblue;
+}
+
+.location {
+  display: flex;
+}
+
+.location-icon {
+  align-self: center;
+}
+
+.google-places-autocomplete {
+  margin-left: 5px;
+}
+
+.places {
+  width: 100%;
+  margin-left: 5px;
 }

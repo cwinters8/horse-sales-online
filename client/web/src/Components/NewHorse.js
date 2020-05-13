@@ -3,7 +3,8 @@ import {Form, Input, Label} from 'reactstrap';
 import Select from 'react-select';
 import {v4 as uuidv4} from 'uuid';
 import Resizer from 'react-image-file-resizer';
-import countryList from 'react-select-country-list';
+import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import {MdLocationSearching} from 'react-icons/md';
 
 import ImagePreview from './ImagePreview';
 
@@ -16,9 +17,6 @@ const breeds = breedList.map((breed, index) => {
   }
 });
 
-// for country select
-const countries = countryList().setLabel('VN', 'Vietnam').getData();
-
 // API URL for Google Maps Geocoding
 const geocodeAPI = "https://maps.googleapis.com/maps/api/geocode/json";
 
@@ -26,12 +24,8 @@ const NewHorse = props => {
   const storageRef = props.firebase.storage().ref('horse-photos/');
   const [images, setImages] = useState([]);
   const [uploadError, setUploadError] = useState(false);
-  // location data
-  const [zipCode, setZipCode] = useState(null);
-  const [country, setCountry] = useState(null);
-  const [states, setStates] = useState([]);
-  const [state, setState] = useState(null);
-  const [city, setCity] = useState(null);
+  const [location, setLocation] = useState({});
+  const [places, setPlaces] = useState([]);
 
   const onImageChange = event => {
     const pictures = [];
@@ -104,43 +98,74 @@ const NewHorse = props => {
     });
   }
 
-  const zipCodeLookup = event => {
-    const zip = event.target.value;
-    setZipCode(zip);
-    fetch(`${geocodeAPI}?address=${zip}&key=${props.firebaseAPIKey}`).then(res => {
-      return res.json();
-    }).then(response => {
-      if (response.results[0]) {
-        const addressComponents = response.results[0].address_components;
-        // console.log(addressComponents);
-        // populate location state
-        addressComponents.forEach((component, index) => {
-          if (component.types[0] === 'country') {
-            setCountry(component.long_name);
-          }
-        });
-      } else {
-        setCountry(null);
-        throw('Invalid zip code');
-      }
-    }).catch(error => {
-      console.error(error);
+  const setLocationState = data => {
+    setLocation({
+      id: data.id,
+      description: data.description
     });
   }
 
-  useEffect(() => {
-    if (country) {
-      console.log(country);
-      // get a list of states
-      // TODO: Next thing to figure out - use Google Places Autocomplete? Would just be a single field that would return a city, state, country, etc
+  const getLocation = () => {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(position => {
+        const coordinates = position.coords;
+        fetch(`${geocodeAPI}?latlng=${coordinates.latitude},${coordinates.longitude}&key=${props.firebaseAPIKey}`).then(res => {
+          return res.json();
+        }).then(response => {
+          // parse results and return city options to user in a select component
+          const results = response.results;
+          if (results.length > 0) {
+            const placeOptions = [];
+            results.forEach((location, index) => {
+              const splitAddress = location.formatted_address.split(', ');
+              // filter out anything long enough to be a full street address. Only want to return city/state/county/country etc.
+              if (splitAddress.length < 4) {
+                placeOptions.push({
+                  label: location.formatted_address,
+                  value: location.place_id
+                });
+              }
+            });
+            placeOptions.push({
+              label: 'Other',
+              value: 'other'
+            });
+            setPlaces(placeOptions);
+          }
+        }).catch(err => {
+          console.error(err);
+        });
+      });
     }
-  }, [country]);
+  }
+
+  const onPlacesChange = place => {
+    if (place.value === 'other') {
+      setPlaces([]);
+    } else {
+      setLocationState({
+        id: place.value,
+        description: place.label
+      });
+      console.log(place);
+    }
+  }
 
   const ImageError = () => {
     if (uploadError) {
       return <p className="error">Error uploading image. Please try again.</p>
     } else {
       return null;
+    }
+  }
+
+  const GetLocation = () => {
+    if (places.length > 0) {
+      // return a select element with places
+      console.log(places);
+      return <Select className="horse-form-select horse-form-input places" options={places} defaultValue={places[0]} onChange={onPlacesChange} />
+    } else {
+      return <GooglePlacesAutocomplete onSelect={setLocationState} apiKey={props.firebaseAPIKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} />
     }
   }
 
@@ -175,18 +200,11 @@ const NewHorse = props => {
 
         {/* Location */}
         {/* TODO: add option to get current location */}
-        {/* TODO: auto-populate city/state/country when zip code is entered */}
-        <Label className="horse-form-label" for="zip">Zip Code</Label>
-        <Input className="horse-form-input" id="zip" type="text" onBlur={zipCodeLookup} />
-
-        <Label className="horse-form-label" for="country">Country</Label>
-        <Select className="horse-form-select horse-form-input" options={countries} value={countries.find(option => option.label === country)} />
-
-        <Label className="horse-form-label" for="city">City</Label>
-        <Input className="horse-form-input" id="city" type="text" />
-
-        <Label className="horse-form-label" for="state">State</Label>
-        <Select className="horse-form-input" id="state" options={states} />        
+        <Label className="horse-form-label" for="location">Location</Label>
+        <div className="location">
+          <MdLocationSearching fill="white" className="location-icon" onClick={getLocation} />
+          <GetLocation />
+        </div>
 
         {/* Height */}
         {/* TODO: validate height input */}

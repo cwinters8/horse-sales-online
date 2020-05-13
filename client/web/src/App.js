@@ -9,6 +9,7 @@ import 'firebase/storage';
 
 // styles
 import './App.css';
+import 'react-google-places-autocomplete/dist/index.min.css';
 
 // components
 import Login from './Components/Login';
