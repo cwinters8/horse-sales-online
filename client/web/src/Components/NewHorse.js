@@ -26,6 +26,16 @@ const NewHorse = props => {
   const [uploadError, setUploadError] = useState(false);
   const [location, setLocation] = useState({});
   const [places, setPlaces] = useState([]);
+  const [hidePlacesAutocomplete, setHidePlacesAutocomplete] = useState(false);
+
+  useEffect(() => {
+    const placesAutocomplete = document.getElementsByClassName('google-places-autocomplete')[0];
+    if (hidePlacesAutocomplete) {
+      placesAutocomplete.style.display = 'none';
+    } else {
+      placesAutocomplete.style.display = 'block';
+    }
+  }, [hidePlacesAutocomplete]);
 
   const onImageChange = event => {
     const pictures = [];
@@ -163,9 +173,12 @@ const NewHorse = props => {
     if (places.length > 0) {
       // return a select element with places
       console.log(places);
+      setHidePlacesAutocomplete(true);
       return <Select className="horse-form-select horse-form-input places" options={places} defaultValue={places[0]} onChange={onPlacesChange} />
     } else {
-      return <GooglePlacesAutocomplete onSelect={setLocationState} apiKey={props.firebaseAPIKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} />
+      setHidePlacesAutocomplete(false);
+      return null;
+      // TODO: once conditional rendering works for the Google Places Autocomplete library, render it here instead of hiding it
     }
   }
 
@@ -203,6 +216,7 @@ const NewHorse = props => {
         <Label className="horse-form-label" for="location">Location</Label>
         <div className="location">
           <MdLocationSearching fill="white" className="location-icon" onClick={getLocation} />
+          <GooglePlacesAutocomplete onSelect={setLocationState} apiKey={props.firebaseAPIKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} />
           <GetLocation />
         </div>
 
