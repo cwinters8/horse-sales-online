@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Form, Input, Label} from 'reactstrap';
+import {Form, Input, Label, Button} from 'reactstrap';
 import Select from 'react-select';
 import {v4 as uuidv4} from 'uuid';
 import Resizer from 'react-image-file-resizer';
@@ -24,8 +24,8 @@ const NewHorse = props => {
   const storageRef = props.firebase.storage().ref('horse-photos/');
   const [images, setImages] = useState([]);
   const [uploadError, setUploadError] = useState(false);
-  const [location, setLocation] = useState({});
   const [places, setPlaces] = useState([]);
+  const [location, setLocation] = useState({});
   const [hidePlacesAutocomplete, setHidePlacesAutocomplete] = useState(false);
 
   useEffect(() => {
@@ -37,6 +37,7 @@ const NewHorse = props => {
     }
   }, [hidePlacesAutocomplete]);
 
+  // FUNCTIONS
   const onImageChange = event => {
     const pictures = [];
     for (let i=0; i < event.target.files.length; i++) {
@@ -110,8 +111,8 @@ const NewHorse = props => {
 
   const setLocationState = data => {
     setLocation({
-      id: data.id,
-      description: data.description
+      value: data.id,
+      label: data.description
     });
   }
 
@@ -152,15 +153,17 @@ const NewHorse = props => {
   const onPlacesChange = place => {
     if (place.value === 'other') {
       setPlaces([]);
+      setLocation({});
     } else {
-      setLocationState({
-        id: place.value,
-        description: place.label
+      setLocation({
+        value: place.value,
+        label: place.label
       });
-      console.log(place);
     }
+    return place;
   }
 
+  // CHILD COMPONENTS
   const ImageError = () => {
     if (uploadError) {
       return <p className="error">Error uploading image. Please try again.</p>
@@ -170,13 +173,26 @@ const NewHorse = props => {
   }
 
   const GetLocation = () => {
+    // this really ugly workaround is needed because useEffect is needed to set parent state, and useEffect cannot be called conditionally
+    let setter;
     if (places.length > 0) {
-      // return a select element with places
-      console.log(places);
-      setHidePlacesAutocomplete(true);
-      return <Select className="horse-form-select horse-form-input places" options={places} defaultValue={places[0]} onChange={onPlacesChange} />
+      setter = true;
     } else {
-      setHidePlacesAutocomplete(false);
+      setter = false;
+    }
+    useEffect(() => {
+      setHidePlacesAutocomplete(setter);
+    }, [setter]);
+    if (places.length > 0) {
+      let selectedPlace;
+      if (Object.keys(location).length === 0) {
+        selectedPlace = places[0];
+      } else {
+        selectedPlace = location;
+      }
+      // return a select element with places
+      return <Select className="horse-form-select horse-form-input places" options={places} onChange={onPlacesChange} value={selectedPlace} placeholder="Select a location" />
+    } else {
       return null;
       // TODO: once conditional rendering works for the Google Places Autocomplete library, render it here instead of hiding it
     }
@@ -212,8 +228,7 @@ const NewHorse = props => {
         <Input className="horse-form-input" id="price" type="text" />
 
         {/* Location */}
-        {/* TODO: add option to get current location */}
-        <Label className="horse-form-label" for="location">Location</Label>
+        <Label className="horse-form-label" for="location">Location</Label><Button onClick={getLocation} color="primary" className="location-button">Get location</Button>
         <div className="location">
           <MdLocationSearching fill="white" className="location-icon" onClick={getLocation} />
           <GooglePlacesAutocomplete onSelect={setLocationState} apiKey={props.firebaseAPIKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} />
