@@ -1,10 +1,9 @@
 import React, {useState, useEffect} from 'react';
-import {Form, Input, Label, Button} from 'reactstrap';
+import {Form, Input, Label, Button, Spinner} from 'reactstrap';
 import Select from 'react-select';
 import {v4 as uuidv4} from 'uuid';
 import Resizer from 'react-image-file-resizer';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
-import {MdLocationSearching} from 'react-icons/md';
 
 import ImagePreview from './ImagePreview';
 
@@ -22,11 +21,14 @@ const geocodeAPI = "https://maps.googleapis.com/maps/api/geocode/json";
 
 const NewHorse = props => {
   const storageRef = props.firebase.storage().ref('horse-photos/');
+
+  // STATE
   const [images, setImages] = useState([]);
   const [uploadError, setUploadError] = useState(false);
   const [places, setPlaces] = useState([]);
   const [location, setLocation] = useState({});
   const [hidePlacesAutocomplete, setHidePlacesAutocomplete] = useState(false);
+  const [pendingGetLocation, setPendingGetLocation] = useState(false);
 
   useEffect(() => {
     const placesAutocomplete = document.getElementsByClassName('google-places-autocomplete')[0];
@@ -118,6 +120,7 @@ const NewHorse = props => {
 
   const getLocation = () => {
     if ('geolocation' in navigator) {
+      setPendingGetLocation(true);
       navigator.geolocation.getCurrentPosition(position => {
         const coordinates = position.coords;
         fetch(`${geocodeAPI}?latlng=${coordinates.latitude},${coordinates.longitude}&key=${props.firebaseAPIKey}`).then(res => {
@@ -142,9 +145,11 @@ const NewHorse = props => {
               value: 'other'
             });
             setPlaces(placeOptions);
+            setPendingGetLocation(false);
           }
         }).catch(err => {
           console.error(err);
+          setPendingGetLocation(false);
         });
       });
     }
@@ -175,7 +180,7 @@ const NewHorse = props => {
   const GetLocation = () => {
     // this really ugly workaround is needed because useEffect is needed to set parent state, and useEffect cannot be called conditionally
     let setter;
-    if (places.length > 0) {
+    if (places.length > 0 || pendingGetLocation) {
       setter = true;
     } else {
       setter = false;
@@ -183,6 +188,11 @@ const NewHorse = props => {
     useEffect(() => {
       setHidePlacesAutocomplete(setter);
     }, [setter]);
+
+    if (pendingGetLocation) {
+      return <Spinner color="primary" />
+    }
+
     if (places.length > 0) {
       let selectedPlace;
       if (Object.keys(location).length === 0) {
