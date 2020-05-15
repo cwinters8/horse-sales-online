@@ -228,9 +228,8 @@ const NewHorse = props => {
         <Input className="horse-form-input" id="price" type="text" />
 
         {/* Location */}
-        <Label className="horse-form-label" for="location">Location</Label><Button onClick={getLocation} color="primary" className="location-button">Get location</Button>
+        <Label className="horse-form-label" for="location">Location</Label><Button onClick={getLocation} color="primary" className="location-button">Get current location</Button>
         <div className="location">
-          <MdLocationSearching fill="white" className="location-icon" onClick={getLocation} />
           <GooglePlacesAutocomplete onSelect={setLocationState} apiKey={props.firebaseAPIKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} />
           <GetLocation />
         </div>

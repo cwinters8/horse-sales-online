@@ -112,17 +112,8 @@
   display: flex;
 }
 
-.location-icon {
-  align-self: center;
-}
-
-.google-places-autocomplete {
-  margin-left: 5px;
-}
-
 .places {
   width: 100%;
-  margin-left: 5px;
 }
 
 .location-button {
