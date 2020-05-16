@@ -127,6 +127,8 @@ const NewHorse = props => {
         fetch(`${geocodeAPI}?latlng=${coordinates.latitude},${coordinates.longitude}&key=${props.firebaseAPIKey}`).then(res => {
           return res.json();
         }).then(response => {
+          // clear the location in case a user has already typed one in
+          setLocation({});
           // parse results and return city options to user in a select component
           const results = response.results;
           if (results.length > 0) {
