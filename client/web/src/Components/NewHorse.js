@@ -243,7 +243,7 @@ const NewHorse = props => {
         {/* Location */}
         <Label className="horse-form-label" for="location">Location</Label><Button onClick={getLocation} color="primary" className="location-button">Get current location</Button>
         <div className="location">
-          <GooglePlacesAutocomplete onSelect={setLocationState} apiKey={props.firebaseAPIKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} />
+          <GooglePlacesAutocomplete inputClassName="form-control" onSelect={setLocationState} apiKey={props.firebaseAPIKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} />
           <GetLocation />
         </div>
 
