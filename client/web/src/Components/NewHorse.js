@@ -176,7 +176,7 @@ const NewHorse = props => {
   }
 
   const checkHeight = values => {
-    const regex = /^\d?\d?\.?\d?$/;
+    const regex = /^\d?\d?\.?[0-3]?$/;
     return regex.test(values.value);
   }
 
