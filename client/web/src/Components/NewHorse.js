@@ -69,6 +69,7 @@ const NewHorse = props => {
             const imageRef = storageRef.child(filePath);
             const uploadTask = imageRef.put(uri);
             uploadTask.on('state_changed', snapshot => {
+              // TODO: render Spinner while images are uploading
               // track upload progress
               // TODO: figure out how to track upload progress for each individual image
               // setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
@@ -151,6 +152,9 @@ const NewHorse = props => {
           console.error(err);
           setPendingGetLocation(false);
         });
+      }, error => {
+        console.error(error);
+        setPendingGetLocation(false);
       });
     }
   }
