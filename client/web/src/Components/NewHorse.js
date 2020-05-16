@@ -200,14 +200,11 @@ const NewHorse = props => {
     }
 
     if (places.length > 0) {
-      let selectedPlace;
       if (Object.keys(location).length === 0) {
-        selectedPlace = places[0];
-      } else {
-        selectedPlace = location;
+        setLocation(places[0])
       }
       // return a select element with places
-      return <Select className="horse-form-select horse-form-input places" options={places} onChange={onPlacesChange} value={selectedPlace} placeholder="Select a location" />
+      return <Select className="horse-form-select horse-form-input places" options={places} onChange={onPlacesChange} value={location} placeholder="Select a location" />
     } else {
       return null;
       // TODO: once conditional rendering works for the Google Places Autocomplete library, render it here instead of hiding it
