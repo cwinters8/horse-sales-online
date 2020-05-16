@@ -24,12 +24,18 @@ const NewHorse = props => {
   const storageRef = props.firebase.storage().ref('horse-photos/');
 
   // STATE
+  const [title, setTitle] = useState(null);
+  const [name, setName] = useState(null);
+  const [breed, setBreed] = useState([]);
   const [images, setImages] = useState([]);
   const [uploadError, setUploadError] = useState(false);
+  const [price, setPrice] = useState(null);
   const [places, setPlaces] = useState([]);
   const [location, setLocation] = useState({});
   const [hidePlacesAutocomplete, setHidePlacesAutocomplete] = useState(false);
   const [pendingGetLocation, setPendingGetLocation] = useState(false);
+  const [height, setHeight] = useState(null);
+  const [description, setDescription] = useState(null);
 
   useEffect(() => {
     const placesAutocomplete = document.getElementsByClassName('google-places-autocomplete')[0];
@@ -180,6 +186,12 @@ const NewHorse = props => {
     return regex.test(values.value);
   }
 
+  const submit = event => {
+    event.preventDefault();
+    // TODO: handle form submission
+    console.log('form submitted');
+  }
+
   // CHILD COMPONENTS
   const ImageError = () => {
     if (uploadError) {
@@ -219,19 +231,19 @@ const NewHorse = props => {
 
   // TODO: persist input data across sessions in case the user refreshes the page
   return (
-    <Form className="horse-form">
+    <Form className="horse-form" onSubmit={submit}>
       <div className="horse-form-container">
         {/* Ad Title */}
         <Label className="horse-form-label" for="ad-title">Title</Label>
-        <Input className="horse-form-input" id="ad-title" type="text" />
+        <Input className="horse-form-input" id="ad-title" type="text" onChange={event => setTitle(event.target.value)} />
 
         {/* Name */}
         <Label className="horse-form-label" for="name">Horse's Name</Label>
-        <Input className="horse-form-input" id="name" type="text" />
+        <Input className="horse-form-input" id="name" type="text" onChange={event => setName(event.target.value)} />
 
         {/* Breed */}
         <Label className="horse-form-label" for="breed">Breed</Label>
-        <Select className="horse-form-select horse-form-input" options={breeds} isMulti={true} />
+        <Select className="horse-form-select horse-form-input" options={breeds} isMulti={true} onChange={data => setBreed(data)} />
 
         {/* Photo(s) */}
         <Label className="horse-form-label" for="photos">Upload Photo(s)</Label>
@@ -243,7 +255,7 @@ const NewHorse = props => {
 
         {/* Price */}
         <Label className="horse-form-label" for="price">Price</Label>
-        <NumberFormat className="horse-form-input form-control" id="price" thousandSeparator={true} decimalScale={0} allowNegative={false} prefix="$" />
+        <NumberFormat className="horse-form-input form-control" id="price" thousandSeparator={true} decimalScale={0} allowNegative={false} prefix="$" onValueChange={values => setPrice(values.floatValue)} />
 
         {/* Location */}
         <Label className="horse-form-label" for="location">Location</Label><Button onClick={getLocation} color="primary" className="location-button">Get current location</Button>
@@ -253,13 +265,16 @@ const NewHorse = props => {
         </div>
 
         {/* Height */}
-        <Label className="horse-form-label" for="height">Height</Label>
-        {/* when you save height input, use the floatValue */}
-        <NumberFormat className="horse-form-input form-control" id="height" decimalScale={1} allowNegative={false} isAllowed={checkHeight} />
+        <Label className="horse-form-label" for="height">Height (hh)</Label>
+        <NumberFormat className="horse-form-input form-control" id="height" decimalScale={1} allowNegative={false} isAllowed={checkHeight} onValueChange={values => setHeight(values.floatValue)} />
 
         {/* Description */}
         <Label className="horse-form-label" for="desc">Description</Label>
-        <Input className="horse-form-input" id="desc" type="textarea" />
+        <Input className="horse-form-input" id="desc" type="textarea" onChange={event => setDescription(event.target.value)} />
+
+        <div className="submit-wrapper">
+          <Button type="submit" color="primary" className="submit">Submit</Button>
+        </div>
       </div>
     </Form>
   )

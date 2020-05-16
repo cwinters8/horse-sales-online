@@ -121,7 +121,12 @@
   padding: 2px 5px;
 }
 
-/* #price {
-  width: 100%;
-  border-radius: .25rem;
-} */
+.submit-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.submit {
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
