@@ -4,6 +4,7 @@ import Select from 'react-select';
 import {v4 as uuidv4} from 'uuid';
 import Resizer from 'react-image-file-resizer';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import NumberFormat from 'react-number-format';
 
 import ImagePreview from './ImagePreview';
 
@@ -237,8 +238,7 @@ const NewHorse = props => {
 
         {/* Price */}
         <Label className="horse-form-label" for="price">Price</Label>
-        {/* TODO: add blur listener to convert input to include dollar sign, add commas, and round to the nearest dollar */}
-        <Input className="horse-form-input" id="price" type="text" />
+        <NumberFormat className="horse-form-input form-control" id="price" thousandSeparator={true} decimalScale={0} allowNegative={false} prefix="$" />
 
         {/* Location */}
         <Label className="horse-form-label" for="location">Location</Label><Button onClick={getLocation} color="primary" className="location-button">Get current location</Button>
