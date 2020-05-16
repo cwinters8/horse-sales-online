@@ -175,6 +175,11 @@ const NewHorse = props => {
     return place;
   }
 
+  const checkHeight = values => {
+    const regex = /^\d?\d?\.?\d?$/;
+    return regex.test(values.value);
+  }
+
   // CHILD COMPONENTS
   const ImageError = () => {
     if (uploadError) {
@@ -248,9 +253,9 @@ const NewHorse = props => {
         </div>
 
         {/* Height */}
-        {/* TODO: validate height input */}
         <Label className="horse-form-label" for="height">Height</Label>
-        <Input className="horse-form-input" id="height" type="number" />
+        {/* when you save height input, use the floatValue */}
+        <NumberFormat className="horse-form-input form-control" id="height" decimalScale={1} allowNegative={false} isAllowed={checkHeight} />
 
         {/* Description */}
         <Label className="horse-form-label" for="desc">Description</Label>
