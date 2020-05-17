@@ -87,6 +87,7 @@
 
 .image-preview-individual-div {
   display: flex;
+  align-items: center;
 }
 
 .x-circle {
