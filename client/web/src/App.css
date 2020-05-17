@@ -98,6 +98,12 @@
   cursor: pointer;
 }
 
+[type="file"] {
+  height: 0;
+  overflow: hidden;
+  width: 0;
+}
+
 .google-places-autocomplete > input {
   width: 100%;
   height: calc(1.5em + .75rem + 2px);

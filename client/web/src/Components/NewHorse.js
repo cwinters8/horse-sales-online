@@ -286,13 +286,15 @@ const NewHorse = props => {
         <Select className="horse-form-select horse-form-input" options={breeds} isMulti={true} onChange={data => setBreed(data)} value={breed} />
 
         {/* Photo(s) */}
-        <Label className="horse-form-label" for="photos">Upload Photo(s)</Label>
+        <Label className="horse-form-label">Images</Label>
       </div>
       <ImagePreview images={images} removeImage={removeImage} firebaseStorageRef={storageRef} />
       <div className="horse-form-container">
         {/* TODO: hide the input and use a label as a choose file button */}
-        <Input className="horse-form-input" type="file" onChange={onImageChange} multiple accept="image/*" />
+        <Input id="photos" className="horse-form-input" type="file" onChange={onImageChange} multiple accept="image/*" />
+        <Label for="photos" className="btn-primary btn">Choose photo(s)</Label>
         <ImageError />
+        <br />
 
         {/* Price */}
         <Label className="horse-form-label" for="price">Price</Label>
