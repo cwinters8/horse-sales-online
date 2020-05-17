@@ -23,19 +23,30 @@ const geocodeAPI = "https://maps.googleapis.com/maps/api/geocode/json";
 const NewHorse = props => {
   const storageRef = props.firebase.storage().ref('horse-photos/');
 
+  // custom hook to persist state in local storage
+  const usePersistedState = (key, defaultValue) => {
+    const [state, setState] = useState(
+      () => JSON.parse(localStorage.getItem(key)) || defaultValue
+    );
+    useEffect(() => {
+      localStorage.setItem(key, JSON.stringify(state));
+    }, [key, state]);
+    return [state, setState];
+  }
+
   // STATE
-  const [title, setTitle] = useState(null);
-  const [name, setName] = useState(null);
-  const [breed, setBreed] = useState([]);
-  const [images, setImages] = useState([]);
+  const [title, setTitle] = usePersistedState('title', null);
+  const [name, setName] = usePersistedState('horseName', null);
+  const [breed, setBreed] = usePersistedState('breed', []);
+  const [images, setImages] = usePersistedState('images', []);
   const [uploadError, setUploadError] = useState(false);
-  const [price, setPrice] = useState(null);
+  const [price, setPrice] = usePersistedState('price', null);
   const [places, setPlaces] = useState([]);
-  const [location, setLocation] = useState({});
+  const [location, setLocation] = usePersistedState('location', {});
   const [hidePlacesAutocomplete, setHidePlacesAutocomplete] = useState(false);
   const [pendingGetLocation, setPendingGetLocation] = useState(false);
-  const [height, setHeight] = useState(null);
-  const [description, setDescription] = useState(null);
+  const [height, setHeight] = usePersistedState('height', null);
+  const [description, setDescription] = usePersistedState('description', null);
 
   useEffect(() => {
     const placesAutocomplete = document.getElementsByClassName('google-places-autocomplete')[0];
@@ -235,42 +246,43 @@ const NewHorse = props => {
       <div className="horse-form-container">
         {/* Ad Title */}
         <Label className="horse-form-label" for="ad-title">Title</Label>
-        <Input className="horse-form-input" id="ad-title" type="text" onChange={event => setTitle(event.target.value)} />
+        <Input className="horse-form-input" id="ad-title" type="text" onChange={event => setTitle(event.target.value)} defaultValue={title} />
 
         {/* Name */}
         <Label className="horse-form-label" for="name">Horse's Name</Label>
-        <Input className="horse-form-input" id="name" type="text" onChange={event => setName(event.target.value)} />
+        <Input className="horse-form-input" id="name" type="text" onChange={event => setName(event.target.value)} defaultValue={name} />
 
         {/* Breed */}
         <Label className="horse-form-label" for="breed">Breed</Label>
-        <Select className="horse-form-select horse-form-input" options={breeds} isMulti={true} onChange={data => setBreed(data)} />
+        <Select className="horse-form-select horse-form-input" options={breeds} isMulti={true} onChange={data => setBreed(data)} defaultValue={breed} />
 
         {/* Photo(s) */}
         <Label className="horse-form-label" for="photos">Upload Photo(s)</Label>
       </div>
       <ImagePreview images={images} removeImage={removeImage} firebaseStorageRef={storageRef} />
       <div className="horse-form-container">
+        {/* TODO: hide the input and use a label as a choose file button */}
         <Input className="horse-form-input" type="file" onChange={onImageChange} multiple accept="image/*" />
         <ImageError />
 
         {/* Price */}
         <Label className="horse-form-label" for="price">Price</Label>
-        <NumberFormat className="horse-form-input form-control" id="price" thousandSeparator={true} decimalScale={0} allowNegative={false} prefix="$" onValueChange={values => setPrice(values.floatValue)} />
+        <NumberFormat className="horse-form-input form-control" id="price" thousandSeparator={true} decimalScale={0} allowNegative={false} prefix="$" onValueChange={values => setPrice(values.floatValue)} defaultValue={price} />
 
         {/* Location */}
         <Label className="horse-form-label" for="location">Location</Label><Button onClick={getLocation} color="primary" className="location-button">Get current location</Button>
         <div className="location">
-          <GooglePlacesAutocomplete inputClassName="form-control" onSelect={setLocationState} apiKey={props.firebaseAPIKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} />
+          <GooglePlacesAutocomplete inputClassName="form-control" onSelect={setLocationState} apiKey={props.firebaseAPIKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} initialValue={location.label || null} />
           <GetLocation />
         </div>
 
         {/* Height */}
         <Label className="horse-form-label" for="height">Height (hh)</Label>
-        <NumberFormat className="horse-form-input form-control" id="height" decimalScale={1} allowNegative={false} isAllowed={checkHeight} onValueChange={values => setHeight(values.floatValue)} />
+        <NumberFormat className="horse-form-input form-control" id="height" decimalScale={1} allowNegative={false} isAllowed={checkHeight} onValueChange={values => setHeight(values.floatValue)} defaultValue={height} />
 
         {/* Description */}
         <Label className="horse-form-label" for="desc">Description</Label>
-        <Input className="horse-form-input" id="desc" type="textarea" onChange={event => setDescription(event.target.value)} />
+        <Input className="horse-form-input" id="desc" type="textarea" onChange={event => setDescription(event.target.value)} defaultValue={description} />
 
         <div className="submit-wrapper">
           <Button type="submit" color="primary" className="submit">Submit</Button>
