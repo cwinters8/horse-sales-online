@@ -35,8 +35,8 @@ const NewHorse = props => {
   }
 
   // STATE
-  const [title, setTitle] = usePersistedState('title', null);
-  const [name, setName] = usePersistedState('horseName', null);
+  const [title, setTitle] = usePersistedState('title', '');
+  const [name, setName] = usePersistedState('horseName', '');
   const [breed, setBreed] = usePersistedState('breed', []);
   const [images, setImages] = usePersistedState('images', []);
   const [uploadError, setUploadError] = useState(false);
@@ -46,7 +46,7 @@ const NewHorse = props => {
   const [hidePlacesAutocomplete, setHidePlacesAutocomplete] = useState(false);
   const [pendingGetLocation, setPendingGetLocation] = useState(false);
   const [height, setHeight] = usePersistedState('height', null);
-  const [description, setDescription] = usePersistedState('description', null);
+  const [description, setDescription] = usePersistedState('description', '');
 
   useEffect(() => {
     const placesAutocomplete = document.getElementsByClassName('google-places-autocomplete')[0];
@@ -58,6 +58,26 @@ const NewHorse = props => {
   }, [hidePlacesAutocomplete]);
 
   // FUNCTIONS
+  const clearAllPersistedState = () => {
+    setTitle('');
+    setName('');
+    setBreed([]);
+    setImages([]);
+    setPrice(null);
+    setLocation({});
+    setHeight(null);
+    setDescription('');
+  }
+
+  // helper function that converts a value to null if its undefined
+  const undefinedToNull = value => {
+    if (value === undefined) {
+      return null;
+    } else {
+      return value;
+    }
+  }
+
   const onImageChange = event => {
     const pictures = [];
     for (let i=0; i < event.target.files.length; i++) {
@@ -130,6 +150,14 @@ const NewHorse = props => {
     });
   }
 
+  // const onPriceChange = values => {
+  //   // check for undefined and change to null
+  //   if (values.floatValue === undefined) {
+  //     values.floatValue = null;
+  //   }
+  //   setPrice(values.floatValue);
+  // }
+
   const setLocationState = data => {
     setLocation({
       value: data.id,
@@ -201,6 +229,7 @@ const NewHorse = props => {
     event.preventDefault();
     // TODO: handle form submission
     console.log('form submitted');
+    clearAllPersistedState();
   }
 
   // CHILD COMPONENTS
@@ -246,15 +275,15 @@ const NewHorse = props => {
       <div className="horse-form-container">
         {/* Ad Title */}
         <Label className="horse-form-label" for="ad-title">Title</Label>
-        <Input className="horse-form-input" id="ad-title" type="text" onChange={event => setTitle(event.target.value)} defaultValue={title} />
+        <Input className="horse-form-input" id="ad-title" type="text" onChange={event => setTitle(event.target.value)} value={title} />
 
         {/* Name */}
         <Label className="horse-form-label" for="name">Horse's Name</Label>
-        <Input className="horse-form-input" id="name" type="text" onChange={event => setName(event.target.value)} defaultValue={name} />
+        <Input className="horse-form-input" id="name" type="text" onChange={event => setName(event.target.value)} value={name} />
 
         {/* Breed */}
         <Label className="horse-form-label" for="breed">Breed</Label>
-        <Select className="horse-form-select horse-form-input" options={breeds} isMulti={true} onChange={data => setBreed(data)} defaultValue={breed} />
+        <Select className="horse-form-select horse-form-input" options={breeds} isMulti={true} onChange={data => setBreed(data)} value={breed} />
 
         {/* Photo(s) */}
         <Label className="horse-form-label" for="photos">Upload Photo(s)</Label>
@@ -267,22 +296,22 @@ const NewHorse = props => {
 
         {/* Price */}
         <Label className="horse-form-label" for="price">Price</Label>
-        <NumberFormat className="horse-form-input form-control" id="price" thousandSeparator={true} decimalScale={0} allowNegative={false} prefix="$" onValueChange={values => setPrice(values.floatValue)} defaultValue={price} />
+        <NumberFormat className="horse-form-input form-control" id="price" thousandSeparator={true} decimalScale={0} allowNegative={false} prefix="$" onValueChange={values => setPrice(undefinedToNull(values.floatValue))} value={price} />
 
         {/* Location */}
         <Label className="horse-form-label" for="location">Location</Label><Button onClick={getLocation} color="primary" className="location-button">Get current location</Button>
         <div className="location">
-          <GooglePlacesAutocomplete inputClassName="form-control" onSelect={setLocationState} apiKey={props.firebaseAPIKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} initialValue={location.label || null} />
+          <GooglePlacesAutocomplete inputClassName="form-control" onSelect={setLocationState} apiKey={props.firebaseAPIKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} initialValue={location.label || ''} />
           <GetLocation />
         </div>
 
         {/* Height */}
         <Label className="horse-form-label" for="height">Height (hh)</Label>
-        <NumberFormat className="horse-form-input form-control" id="height" decimalScale={1} allowNegative={false} isAllowed={checkHeight} onValueChange={values => setHeight(values.floatValue)} defaultValue={height} />
+        <NumberFormat className="horse-form-input form-control" id="height" decimalScale={1} allowNegative={false} isAllowed={checkHeight} onValueChange={values => setHeight(undefinedToNull(values.floatValue))} value={height} />
 
         {/* Description */}
         <Label className="horse-form-label" for="desc">Description</Label>
-        <Input className="horse-form-input" id="desc" type="textarea" onChange={event => setDescription(event.target.value)} defaultValue={description} />
+        <Input className="horse-form-input" id="desc" type="textarea" onChange={event => setDescription(event.target.value)} value={description} />
 
         <div className="submit-wrapper">
           <Button type="submit" color="primary" className="submit">Submit</Button>
