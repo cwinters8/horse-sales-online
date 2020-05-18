@@ -90,6 +90,12 @@ const NewHorse = props => {
     }
     Promise.all(pictures.map(picture => {
       return new Promise((resolve, reject) => {
+        const fileID = uuidv4();
+        // try setting image state with a loading property
+        setImages([...images, {
+          id: fileID,
+          loading: true
+        }]);
         // resize image
         Resizer.imageFileResizer(
           picture,
@@ -100,30 +106,32 @@ const NewHorse = props => {
           0,
           uri => {
             const userID = props.firebase.auth().currentUser.uid;
-            const fileID = uuidv4();
             const fileName = `${fileID}.jpg`;
             const filePath = `${userID}/${fileName}`;
             // upload to firebase
             const imageRef = storageRef.child(filePath);
             const uploadTask = imageRef.put(uri);
             uploadTask.on('state_changed', snapshot => {
-              // TODO: render Spinner while images are uploading
               // track upload progress
               // TODO: figure out how to track upload progress for each individual image
               // setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-              console.log((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
             }, error => {
               // if upload fails
               setUploadError(true);
-              console.log(`Upload error: ${error}`);
-              reject(error);
+              console.error(`Upload error: ${error}`);
+              reject({
+                error,
+                id: fileID,
+                loading: false
+              });
             }, () => {
               // if upload succeeds
               uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
                 resolve({
                   id: fileID,
                   path: filePath,
-                  url: downloadURL
+                  url: downloadURL,
+                  loading: false
                 });
               });
             });
@@ -133,6 +141,8 @@ const NewHorse = props => {
       });
     })).then(imageData => {
       setImages([...images, ...imageData]);
+    }).catch(errData => {
+      setImages([...images, ...errData]);
     });
   }
 
@@ -150,14 +160,6 @@ const NewHorse = props => {
       console.log(error);
     });
   }
-
-  // const onPriceChange = values => {
-  //   // check for undefined and change to null
-  //   if (values.floatValue === undefined) {
-  //     values.floatValue = null;
-  //   }
-  //   setPrice(values.floatValue);
-  // }
 
   const setLocationState = data => {
     setLocation({
