@@ -22,6 +22,7 @@ const geocodeAPI = "https://maps.googleapis.com/maps/api/geocode/json";
 
 const NewHorse = props => {
   const storageRef = props.firebase.storage().ref('horse-photos/');
+  const db = props.firebase.firestore();
 
   // custom hook to persist state in local storage
   const usePersistedState = (key, defaultValue) => {
@@ -231,8 +232,36 @@ const NewHorse = props => {
   const submit = event => {
     event.preventDefault();
     // TODO: handle form submission
-    console.log('form submitted');
-    clearAllPersistedState();
+    const userID = props.firebase.auth().currentUser.uid;
+    const docID = uuidv4();
+    // manipulate data to prepare it for Firestore
+    const breedData = breed.map(value => {
+      return value.value;
+    });
+    const imageData = images.map(value => {
+      return {
+        id: value.id,
+        url: value.url
+      }
+    });
+
+    // write to Firestore
+    db.collection('horses').doc(docID).set({
+      userID,
+      title: title === '' ? null : title,
+      name: name === '' ? null : name,
+      breed: breedData,
+      images: imageData,
+      price,
+      location,
+      height,
+      description: description === '' ? null : description
+    }).then(() => {
+      console.log('Document submitted successfully!');
+      clearAllPersistedState();
+    }).catch(error => {
+      console.error('Error writing document: ', error);
+    });
   }
 
   // CHILD COMPONENTS
@@ -257,6 +286,7 @@ const NewHorse = props => {
     }, [setter]);
 
     if (pendingGetLocation) {
+      // TODO: add a cancel button to cancel getting current location
       return <Spinner color="primary" />
     }
 
@@ -272,7 +302,6 @@ const NewHorse = props => {
     }
   }
 
-  // TODO: persist input data across sessions in case the user refreshes the page
   return (
     <Form className="horse-form" onSubmit={submit}>
       <div className="horse-form-container">
