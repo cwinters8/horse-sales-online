@@ -6,14 +6,26 @@ import Resizer from 'react-image-file-resizer';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import NumberFormat from 'react-number-format';
 
+// components
 import ImagePreview from './ImagePreview';
 
-// for horse breed select
+// data
 import breedList from '../data/horseBreeds.json';
+import genderList from '../data/HorseGender.json';
+
+// for horse breed select
 const breeds = breedList.map((breed, index) => {
   return {
     label: breed,
     value: breed
+  }
+});
+
+// for gender select
+const genders = genderList.map((gender, index) => {
+  return {
+    label: gender,
+    value: gender
   }
 });
 
@@ -39,6 +51,7 @@ const NewHorse = props => {
   const [title, setTitle] = usePersistedState('title', '');
   const [name, setName] = usePersistedState('horseName', '');
   const [breed, setBreed] = usePersistedState('breed', []);
+  const [gender, setGender] = usePersistedState('gender', {});
   const [images, setImages] = usePersistedState('images', []);
   const [uploadError, setUploadError] = useState(false);
   const [price, setPrice] = usePersistedState('price', null);
@@ -64,6 +77,7 @@ const NewHorse = props => {
     setTitle('');
     setName('');
     setBreed([]);
+    setGender({});
     setImages([]);
     setPrice(null);
     setLocation({});
@@ -252,13 +266,13 @@ const NewHorse = props => {
       title: title === '' ? null : title,
       name: name === '' ? null : name,
       breed: breedData,
+      gender: gender.value ? gender.value : null,
       images: imageData,
       price,
       location,
       height,
       description: description === '' ? null : description
     }).then(() => {
-      console.log('Document submitted successfully!');
       setWriteError(false);
       clearAllPersistedState();
     }).catch(error => {
@@ -328,6 +342,10 @@ const NewHorse = props => {
         {/* Breed */}
         <Label className="horse-form-label" for="breed">Breed</Label>
         <Select className="horse-form-select horse-form-input" options={breeds} isMulti={true} onChange={data => setBreed(data)} value={breed} />
+
+        {/* Gender */}
+        <Label className="horse-form-label" for="gender">Gender</Label>
+        <Select className="horse-form-select horse-form-input" options={genders} onChange={data => setGender(data)} value={gender} />
 
         {/* Photo(s) */}
         <Label className="horse-form-label">Images</Label>
