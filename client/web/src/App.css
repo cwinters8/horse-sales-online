@@ -6,7 +6,7 @@
 
 .App {
   text-align: center;
-  font-family: 'Baloo Thambi 2', cursive;
+  font-family: 'Baloo Thambi 2', sans-serif;
 }
 
 .App-header {
@@ -136,4 +136,8 @@
 .submit {
   margin-top: 20px;
   margin-bottom: 15px;
+}
+
+.submit-error {
+  margin-top: 15px;
 }

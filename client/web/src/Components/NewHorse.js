@@ -48,6 +48,7 @@ const NewHorse = props => {
   const [pendingGetLocation, setPendingGetLocation] = useState(false);
   const [height, setHeight] = usePersistedState('height', null);
   const [description, setDescription] = usePersistedState('description', '');
+  const [writeError, setWriteError] = useState(false);
 
   useEffect(() => {
     const placesAutocomplete = document.getElementsByClassName('google-places-autocomplete')[0];
@@ -229,9 +230,9 @@ const NewHorse = props => {
     return regex.test(values.value);
   }
 
+  // handle form submission
   const submit = event => {
     event.preventDefault();
-    // TODO: handle form submission
     const userID = props.firebase.auth().currentUser.uid;
     const docID = uuidv4();
     // manipulate data to prepare it for Firestore
@@ -258,8 +259,10 @@ const NewHorse = props => {
       description: description === '' ? null : description
     }).then(() => {
       console.log('Document submitted successfully!');
+      setWriteError(false);
       clearAllPersistedState();
     }).catch(error => {
+      setWriteError(true);
       console.error('Error writing document: ', error);
     });
   }
@@ -299,6 +302,15 @@ const NewHorse = props => {
     } else {
       return null;
       // TODO: once conditional rendering works for the Google Places Autocomplete library, render it here instead of hiding it
+    }
+  }
+
+  const WriteError = () => {
+    if (writeError) {
+      // TODO: create a Contact Us page
+      return <p className="error submit-error">Something went wrong. Please try to submit again. If you continue to have issues, please <a href="/contact">contact us</a>.</p>
+    } else {
+      return null;
     }
   }
 
@@ -347,6 +359,7 @@ const NewHorse = props => {
         <Label className="horse-form-label" for="desc">Description</Label>
         <Input className="horse-form-input" id="desc" type="textarea" onChange={event => setDescription(event.target.value)} value={description} />
 
+        <WriteError />
         <div className="submit-wrapper">
           <Button type="submit" color="primary" className="submit">Submit</Button>
         </div>
