@@ -16,6 +16,7 @@ import Login from './Components/Login';
 import PrivateRoute from './Components/PrivateRoute';
 import NewHorse from './Components/NewHorse';
 import Main from './Components/Main';
+import Horse from './Components/Horse';
 
 // images
 import jumping from './images/jumping.png';
@@ -109,6 +110,7 @@ const App = () => {
             <Route exact path="/" render={() => <Main />} />
             <Route path="/login" render={() => <Login firebase={firebase} />} />
             <PrivateRoute path="/new-horse" render={() => <NewHorse firebase={firebase} firebaseAPIKey={firebaseConfig.apiKey} />} />
+            <Route path="/horse/:id" render={({match}) => <Horse horseID={match.params.id} firebase={firebase} />} />
           </Switch>
         </BrowserRouter>
       </header>
