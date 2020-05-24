@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
-import {Navbar, NavbarBrand, NavbarToggler, Nav, NavLink, NavItem, Container, Row, Col} from 'reactstrap';
 import firebase from 'firebase/app';
 import 'firebase/analytics';
 import 'firebase/auth';
@@ -41,7 +40,6 @@ firebase.analytics();
 
 const App = () => {
   const [userName, setUserName] = useState(null);
-  const [headerIsOpen, setHeaderIsOpen] = useState(false);
 
   // check if a user is signed in
   firebase.auth().onAuthStateChanged(user => {
@@ -60,10 +58,6 @@ const App = () => {
       // route to home on sign out for now
       window.location.href = '/';
     }); 
-  }
-
-  const headerToggle = () => {
-    setHeaderIsOpen(!headerIsOpen);
   }
 
   const NavHeaderRight = () => {
