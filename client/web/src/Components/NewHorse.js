@@ -63,6 +63,7 @@ const NewHorse = props => {
   const [description, setDescription] = usePersistedState('description', '');
   const [writeError, setWriteError] = useState(false);
 
+  // HOOKS
   useEffect(() => {
     const placesAutocomplete = document.getElementsByClassName('google-places-autocomplete')[0];
     if (hidePlacesAutocomplete) {
@@ -71,6 +72,13 @@ const NewHorse = props => {
       placesAutocomplete.style.display = 'block';
     }
   }, [hidePlacesAutocomplete]);
+
+  // remove continue object from localStorage if the user is already logged in
+  useEffect(() => {
+    if (props.firebase.auth().currentUser) {
+      localStorage.removeItem('continue');
+    }
+  });
 
   // FUNCTIONS
   const clearAllPersistedState = () => {

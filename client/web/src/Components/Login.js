@@ -10,7 +10,6 @@ const Login = props => {
       props.firebase.auth.EmailAuthProvider.PROVIDER_ID
     ]
   }
-  // localStorage.removeItem('continue');
 
   return (
     <div>
