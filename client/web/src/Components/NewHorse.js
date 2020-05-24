@@ -378,6 +378,7 @@ const NewHorse = props => {
         <Label className="horse-form-label" for="desc">Description</Label>
         <Input className="horse-form-input" id="desc" type="textarea" onChange={event => setDescription(event.target.value)} value={description} />
 
+        {/* TODO: Age, Registries, Color */}
         <WriteError />
         <div className="submit-wrapper">
           <Button type="submit" color="primary" className="submit">Submit</Button>

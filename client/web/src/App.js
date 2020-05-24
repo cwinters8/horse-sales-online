@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
-import {Nav, NavLink, NavItem, Container, Row, Col} from 'reactstrap';
+import {Navbar, NavbarBrand, NavbarToggler, Nav, NavLink, NavItem, Container, Row, Col} from 'reactstrap';
 import firebase from 'firebase/app';
 import 'firebase/analytics';
 import 'firebase/auth';
@@ -41,6 +41,7 @@ firebase.analytics();
 
 const App = () => {
   const [userName, setUserName] = useState(null);
+  const [headerIsOpen, setHeaderIsOpen] = useState(false);
 
   // check if a user is signed in
   firebase.auth().onAuthStateChanged(user => {
@@ -53,58 +54,64 @@ const App = () => {
     }
   });
 
-  const signOut = () => {
+  const signOut = event => {
+    event.preventDefault();
     firebase.auth().signOut().then(() => {
       // route to home on sign out for now
       window.location.href = '/';
     }); 
   }
 
-  const NavHeader = () => {
+  const headerToggle = () => {
+    setHeaderIsOpen(!headerIsOpen);
+  }
+
+  const NavHeaderRight = () => {
     if (userName) {
       return (
-        <Nav>
-          <NavItem>
-            <NavLink>{userName}</NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink onClick={signOut} href="#">Sign Out</NavLink>
-          </NavItem>
-        </Nav>
+        <div className="header-right-grid">
+          {/* TODO: link to a user's profile */}
+          <p>Hello, <a href="/profile">{userName.split(' ')[0]}</a>!</p>
+          <a onClick={signOut} href="/">Sign Out</a>
+        </div>
       );
     } else {
       return (
-        <Nav>
-          <NavItem>
-            <NavLink href="/login">Login</NavLink>
-          </NavItem>
-        </Nav>
+        <div className="header-right-grid">
+          <a href="/login">Login</a>
+        </div>
       )
     }
   }
 
+  const HeaderImages = () => {
+    return (
+      <div className="header-images">
+        <img className="horse-image" src={jumping} alt="Jumping horse and rider" />
+        <img className="horse-image" src={dressage} alt="Dressage horse and rider" />
+        <img className="horse-image" src={canter} alt="Cantering horse and rider" />
+        <img className="horse-image" src={cowPony} alt="Horse and rider working a cow" />
+        <img className="horse-image" src={trail} alt="Trail horse and rider" />
+      </div>
+    )
+  }
+
+  const NavHeader = () => {
+    return (
+      <div className="header-grid">
+        <p className="title"><a href="/">Horse Sales Online</a></p>
+        <HeaderImages />
+        <NavHeaderRight />
+      </div>
+    )
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <Container>
-          <Row>
-            <Col>
-              <NavHeader />
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <img className="horse-image" src={jumping} alt="Jumping horse and rider" />
-              <img className="horse-image" src={dressage} alt="Dressage horse and rider" />
-              <img className="horse-image" src={canter} alt="Cantering horse and rider" />
-              <img className="horse-image" src={cowPony} alt="Horse and rider working a cow" />
-              <img className="horse-image" src={trail} alt="Trail horse and rider" />
-            </Col>
-          </Row>
-          <Row>
-            <Col><h1 className="header-title"><a id="title" href="/">Horse Sales Online</a></h1></Col>
-          </Row>
-        </Container>
+      <header>
+        <NavHeader />
+      </header>
+      <main>
         <BrowserRouter>
           <Switch>
             <Route exact path="/" render={() => <Main />} />
@@ -113,7 +120,7 @@ const App = () => {
             <Route path="/horse/:id" render={({match}) => <Horse horseID={match.params.id} firebase={firebase} />} />
           </Switch>
         </BrowserRouter>
-      </header>
+      </main>
     </div>
   );
 }

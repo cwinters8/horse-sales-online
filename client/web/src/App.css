@@ -8,37 +8,90 @@
 .App {
   text-align: center;
   font-family: 'Baloo Thambi 2', sans-serif;
-}
-
-.App-header {
   background-color: #282c34;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: calc(10px + 2vmin);
   color: white;
+  font-size: clamp(
+    10px,
+    calc(10px + 2vmin),
+    20px
+  );
+  
+  display: grid;
+  grid-template-rows: min-content;
+  grid-template-areas: 
+    "header"
+    "main";
 }
 
-.nav {
-  justify-content: flex-end;
+header {
+  grid-area: header;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.header-grid {
+  display: grid;
+  grid-template-columns: max-content 1fr max-content;
+  grid-template-areas: 
+    "title images header-right";
+}
+
+@media (max-width: 660px) {
+  .header-grid {
+    grid-template-areas: 
+      "images images"
+      "title header-right";
+  }
+}
+
+.header-images {
+  grid-area: images;
+}
+
+.header-right-grid {
+  grid-area: header-right;
+  display: grid;
+  grid-template-rows: 100%;
+  grid-template-columns: max-content max-content;
+  margin-left: auto;
+}
+
+.header-right-grid > * {
+  margin-right: 10px;
+  font-size: clamp(
+    15px,
+    calc(15px + 2vmin),
+    24px
+  );
+}
+
+main {
+  grid-area: main;
 }
 
 .horse-image {
-  height: 100px;
+  height: 60px;
   margin-left: 5px;
   margin-right: 5px;
 }
 
-.header-title {
-  margin-top: 10px;
+.title {
+  grid-area: title;
+  margin-left: 10px;
+  margin-right: auto;
+  font-size: clamp(
+    15px,
+    calc(15px + 2vmin),
+    24px
+  );
 }
 
-#title {
+.title > a {
   color: white;
 }
 
-#title:hover {
+.title > a:hover {
   text-decoration: none;
 }
 
