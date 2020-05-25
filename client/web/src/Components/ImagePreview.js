@@ -20,7 +20,7 @@ const ImagePreview = props => {
           return (
             <div key={image.id} className="image-preview-individual-div">
               <img className="image-preview" src={image.url} alt="Upload preview" />
-              <BsXCircle className="x-circle" onClick={() => props.removeImage(index)} />
+              <BsXCircle className="x-circle" size={15} onClick={() => props.removeImage(index)} />
             </div>
           )
         })}

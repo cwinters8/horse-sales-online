@@ -139,6 +139,7 @@ const NewHorse = props => {
               // track upload progress
               // TODO: figure out how to track upload progress for each individual image
               // setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+              console.log(`Upload progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}`);
             }, error => {
               // if upload fails
               setUploadError(true);
