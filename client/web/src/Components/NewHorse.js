@@ -13,6 +13,9 @@ import ImagePreview from './ImagePreview';
 import breedList from '../data/horseBreeds.json';
 import genderList from '../data/HorseGender.json';
 
+// images
+import poweredByGoogle from '../images/powered_by_google_on_non_white.png';
+
 // for horse breed select
 const breeds = breedList.map((breed, index) => {
   return {
@@ -369,7 +372,6 @@ const NewHorse = props => {
       </div>
       <ImagePreview images={images} removeImage={removeImage} firebaseStorageRef={storageRef} />
       <div className="horse-form-container">
-        {/* TODO: hide the input and use a label as a choose file button */}
         <Input id="photos" className="horse-form-input" type="file" onChange={onImageChange} multiple accept="image/*" />
         <Label for="photos" className="btn-primary btn">Choose photo(s)</Label>
         <ImageError />
@@ -385,6 +387,9 @@ const NewHorse = props => {
         <div className="location">
           <GooglePlacesAutocomplete inputClassName="form-control" onSelect={setLocationState} apiKey={props.firebaseAPIKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} initialValue={location.label || ''} />
           <GetLocation />
+        </div>
+        <div className="powered-by-google">
+          <img src={poweredByGoogle} alt="Powered by Google" />
         </div>
 
         {/* Height */}

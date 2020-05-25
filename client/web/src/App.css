@@ -104,10 +104,7 @@ main {
 
 .horse-form {
   text-align: left;
-  /* width: 100%; */
   display: grid;
-  /* min-width: 300px;
-  max-width: 100%; */
   grid-template-columns: 100%;
 }
 
@@ -136,10 +133,7 @@ main {
   justify-items: center;
   justify-self: center;
   max-width: 100vw;
-  /* width: 100%; */
   grid-template-columns: repeat(auto-fit, 215px);
-  /* grid-auto-columns: 215px; */
-  /* grid-template-columns: max-content max-content max-content; */
   gap: 15px;
   padding-right: 30px;
   padding-left: 30px;
@@ -149,22 +143,12 @@ main {
   max-height: 200px;
   max-width: 100%;
   justify-self: center;
-  /* margin-left: 20px;
-  margin-right: 5px;
-  margin-bottom: 15px; */
 }
 
 .image-preview-individual-div {
-  /* display: flex;
-  align-items: center;
-  justify-content: center; */
   display: grid;
   grid-template-columns: 200px min-content;
   gap: 5px;
-}
-
-.x-circle {
-  /* align-self: flex-start; */
 }
 
 .x-circle:hover, .location-icon:hover {
@@ -189,6 +173,10 @@ main {
 
 .location {
   display: flex;
+}
+
+.powered-by-google {
+  text-align: right;
 }
 
 .places {
