@@ -165,8 +165,10 @@ const NewHorse = props => {
       });
     })).then(imageData => {
       setImages([...images, ...imageData]);
+      clearFileInput();
     }).catch(errData => {
       setImages([...images, ...errData]);
+      clearFileInput();
     });
   }
 
@@ -183,6 +185,12 @@ const NewHorse = props => {
       alert('Failed to delete image - please try again.');
       console.log(error);
     });
+  }
+
+  // removes bug that happened when the user goes back or forward to this page - the loaded file input would render a new image upload
+  const clearFileInput = () => {
+    const input = document.getElementById('photos');
+    input.value = '';
   }
 
   const setLocationState = data => {
