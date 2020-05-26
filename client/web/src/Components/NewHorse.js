@@ -322,15 +322,20 @@ const NewHorse = props => {
       setHidePlacesAutocomplete(setter);
     }, [setter]);
 
+    useEffect(() => {
+      if (places.length > 0) {
+        if (Object.keys(location).length === 0) {
+          setLocation(places[0])
+        }
+      }
+    });
+
     if (pendingGetLocation) {
       // TODO: add a cancel button to cancel getting current location
       return <Spinner color="primary" />
     }
 
     if (places.length > 0) {
-      if (Object.keys(location).length === 0) {
-        setLocation(places[0])
-      }
       // return a select element with places
       return <Select className="horse-form-select horse-form-input places" options={places} onChange={onPlacesChange} value={location} placeholder="Select a location" />
     } else {

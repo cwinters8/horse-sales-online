@@ -65,6 +65,7 @@ const App = () => {
       return (
         <div className="header-right-grid">
           {/* TODO: link to a user's profile */}
+          {/* TODO: add spacing before 'Hello' to prevent mashing in with 'Horse Sales Online' */}
           <p>Hello, <a href="/profile">{userName.split(' ')[0]}</a>!</p>
           <a onClick={signOut} href="/">Sign Out</a>
         </div>
