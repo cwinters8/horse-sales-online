@@ -175,6 +175,10 @@ main {
   display: flex;
 }
 
+.cancel {
+  margin-left: 15px;
+}
+
 .powered-by-google {
   text-align: right;
 }

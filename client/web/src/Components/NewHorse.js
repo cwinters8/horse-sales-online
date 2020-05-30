@@ -358,7 +358,7 @@ const NewHorse = props => {
       return (
         <div>
           <Spinner color="primary" />
-          <Button color="danger" onClick={cancelGetLocation}>Cancel</Button>
+          <Button className="cancel" color="danger" onClick={cancelGetLocation}>Cancel</Button>
         </div>
       )
     }
