@@ -65,6 +65,8 @@ const NewHorse = props => {
   const [height, setHeight] = usePersistedState('height', null);
   const [description, setDescription] = usePersistedState('description', '');
   const [writeError, setWriteError] = useState(false);
+  const [abortFetch, setAbortFetch] = useState(false);
+  const [navHandlerId, setNavHandlerId] = useState(null);
 
   // HOOKS
   useEffect(() => {
@@ -204,46 +206,67 @@ const NewHorse = props => {
     });
   }
 
+  const controller = new window.AbortController();
+  const signal = controller.signal;
+  signal.addEventListener('abort', () => {
+    // set abortFetch back to false after the fetch has been aborted
+    setAbortFetch(false);
+  });
   const getLocation = () => {
     if ('geolocation' in navigator) {
       setPendingGetLocation(true);
-      navigator.geolocation.getCurrentPosition(position => {
+      setNavHandlerId(navigator.geolocation.watchPosition(position => {
         const coordinates = position.coords;
-        fetch(`${geocodeAPI}?latlng=${coordinates.latitude},${coordinates.longitude}&key=${props.firebaseAPIKey}`).then(res => {
-          return res.json();
-        }).then(response => {
-          // clear the location in case a user has already typed one in
-          setLocation({});
-          // parse results and return city options to user in a select component
-          const results = response.results;
-          if (results.length > 0) {
-            const placeOptions = [];
-            results.forEach((location, index) => {
-              const splitAddress = location.formatted_address.split(', ');
-              // filter out anything long enough to be a full street address. Only want to return city/state/county/country etc.
-              if (splitAddress.length < 4) {
-                placeOptions.push({
-                  label: location.formatted_address,
-                  value: location.place_id
-                });
-              }
-            });
-            placeOptions.push({
-              label: 'Other',
-              value: 'other'
-            });
-            setPlaces(placeOptions);
+        if (!abortFetch) {
+          fetch(`${geocodeAPI}?latlng=${coordinates.latitude},${coordinates.longitude}&key=${props.firebaseAPIKey}`, {signal: signal}).then(res => {
+            return res.json();
+          }).then(response => {
+            // clear the location in case a user has already typed one in
+            setLocation({});
+            // parse results and return city options to user in a select component
+            const results = response.results;
+            if (results.length > 0) {
+              const placeOptions = [];
+              results.forEach((location, index) => {
+                const splitAddress = location.formatted_address.split(', ');
+                // filter out anything long enough to be a full street address. Only want to return city/state/county/country etc.
+                if (splitAddress.length < 4) {
+                  placeOptions.push({
+                    label: location.formatted_address,
+                    value: location.place_id
+                  });
+                }
+              });
+              placeOptions.push({
+                label: 'Other',
+                value: 'other'
+              });
+              setPlaces(placeOptions);
+              setPendingGetLocation(false);
+            }
+          }).catch(err => {
+            console.error(err);
             setPendingGetLocation(false);
-          }
-        }).catch(err => {
-          console.error(err);
+          });
+        } else {
+          console.log('fetch aborted');
           setPendingGetLocation(false);
-        });
+        }
       }, error => {
         console.error(error);
         setPendingGetLocation(false);
-      });
+      }));
     }
+  }
+
+  const cancelGetLocation = () => {
+    console.log('aborting fetch...');
+    setAbortFetch(true);
+    if (navHandlerId) {
+      navigator.geolocation.clearWatch(navHandlerId);
+    }
+    controller.abort();
+    setPendingGetLocation(false);
   }
 
   const onPlacesChange = place => {
@@ -332,7 +355,12 @@ const NewHorse = props => {
 
     if (pendingGetLocation) {
       // TODO: add a cancel button to cancel getting current location
-      return <Spinner color="primary" />
+      return (
+        <div>
+          <Spinner color="primary" />
+          <Button color="danger" onClick={cancelGetLocation}>Cancel</Button>
+        </div>
+      )
     }
 
     if (places.length > 0) {
