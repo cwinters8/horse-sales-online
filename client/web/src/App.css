@@ -41,13 +41,17 @@ header {
 @media (max-width: 963px) {
   .header-grid {
     grid-template-areas: 
+      "header-right header-right"
       "images images"
-      "title title"
-      "header-right header-right";
+      "title title";
   }
   .title {
     margin-right: 0px !important;
     margin-left: 0px !important;
+    margin-bottom: 0px;
+  }
+  .header-right-grid > * {
+    font-size: 18px !important;
   }
 }
 
