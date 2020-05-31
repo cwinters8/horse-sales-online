@@ -57,20 +57,25 @@ const Horse = props => {
   // DOM
   return (
     <div>
-      <h2>{title}</h2>
-      <ImageGallery items={images.map(image => {
-        return {
-          original: image.url,
-          thumbnail: image.url
-        }
-      })} showPlayButton={false} />
-      <p>Horse's name: {name}</p>
-      <p>Price: <Price /></p>
-      <p>Breed: {breed.join(', ')}</p>
-      <p>Gender: {gender}</p>
-      <p>Height: {height}</p>
-      <p>Location: {location.label}</p>
-      <p>Description: {description}</p>
+      <h2 className="ad-title">{title}</h2>
+      <div className="ad-main">
+        <ImageGallery items={images.map(image => {
+          return {
+            original: image.url,
+            thumbnail: image.url
+          }
+        })} showPlayButton={false} />
+        <div className="ad-details">
+          <p>Horse's name: {name}</p>
+          <p>Price: <Price /></p>
+          <p>Breed: {breed.join(', ')}</p>
+          <p>Gender: {gender}</p>
+          <p>Height: {height}</p>
+          <p>Location: {location.label}</p>
+          <p>Description: {description}</p>
+        </div>
+        {/* <p className="ad-description">Description: {description}</p> */}
+      </div>
     </div>
   )
 }
