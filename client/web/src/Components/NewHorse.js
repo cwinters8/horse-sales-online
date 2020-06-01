@@ -318,6 +318,7 @@ const NewHorse = props => {
     }).then(() => {
       setWriteError(false);
       clearAllPersistedState();
+      alert("Successfully submitted!")
     }).catch(error => {
       setWriteError(true);
       console.error('Error writing document: ', error);
@@ -354,7 +355,6 @@ const NewHorse = props => {
     });
 
     if (pendingGetLocation) {
-      // TODO: add a cancel button to cancel getting current location
       return (
         <div>
           <Spinner color="primary" />
@@ -385,6 +385,7 @@ const NewHorse = props => {
     <Form className="horse-form" onSubmit={submit}>
       <div className="horse-form-container">
         {/* Ad Title */}
+        {/* TODO: Make a required field */}
         <Label className="horse-form-label" for="ad-title">Title</Label>
         <Input className="horse-form-input" id="ad-title" type="text" onChange={event => setTitle(event.target.value)} value={title} />
 
@@ -401,6 +402,7 @@ const NewHorse = props => {
         <Select className="horse-form-select horse-form-input" options={genders} onChange={data => setGender(data)} value={gender} />
 
         {/* Photo(s) */}
+        {/* TODO: Make at least one photo required, and limit to a certain number of images */}
         <Label className="horse-form-label">Images</Label>
       </div>
       <ImagePreview images={images} removeImage={removeImage} firebaseStorageRef={storageRef} />
@@ -415,7 +417,6 @@ const NewHorse = props => {
         <NumberFormat className="horse-form-input form-control" id="price" thousandSeparator={true} decimalScale={0} allowNegative={false} prefix="$" onValueChange={values => setPrice(undefinedToNull(values.floatValue))} value={price} />
 
         {/* Location */}
-        {/* TODO: HIGH PRIORITY - add Google Maps attribution */}
         <Label className="horse-form-label" for="location">Location</Label><Button onClick={getLocation} color="primary" className="location-button">Get current location</Button>
         <div className="location">
           <GooglePlacesAutocomplete inputClassName="form-control" onSelect={setLocationState} apiKey={props.firebaseAPIKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} initialValue={location.label || ''} />
@@ -433,7 +434,7 @@ const NewHorse = props => {
         <Label className="horse-form-label" for="desc">Description</Label>
         <Input className="horse-form-input" id="desc" type="textarea" onChange={event => setDescription(event.target.value)} value={description} />
 
-        {/* TODO: Age, Registries, Color */}
+        {/* TODO: Age, Registries, Color, For sale/stud/lease etc */}
         <WriteError />
         <div className="submit-wrapper">
           <Button type="submit" color="primary" className="submit">Submit</Button>

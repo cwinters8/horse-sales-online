@@ -16,6 +16,7 @@ import PrivateRoute from './Components/PrivateRoute';
 import NewHorse from './Components/NewHorse';
 import Main from './Components/Main';
 import Horse from './Components/Horse';
+import Horses from './Components/Horses';
 
 // images
 import jumping from './images/jumping.png';
@@ -65,7 +66,6 @@ const App = () => {
       return (
         <div className="header-right-grid">
           {/* TODO: link to a user's profile */}
-          {/* TODO: add spacing before 'Hello' to prevent mashing in with 'Horse Sales Online' */}
           <p>Hello, <a href="/profile">{userName.split(' ')[0]}</a>!</p>
           <a onClick={signOut} href="/">Sign Out</a>
         </div>
@@ -113,6 +113,7 @@ const App = () => {
             <Route path="/login" render={() => <Login firebase={firebase} />} />
             <PrivateRoute path="/new-horse" render={() => <NewHorse firebase={firebase} firebaseAPIKey={firebaseConfig.apiKey} />} />
             <Route path="/horse/:id" render={({match}) => <Horse horseID={match.params.id} firebase={firebase} />} />
+            <Route path="/horses" render={() => <Horses firebase={firebase} />} />
           </Switch>
         </BrowserRouter>
       </main>
