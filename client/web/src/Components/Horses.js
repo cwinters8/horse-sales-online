@@ -15,17 +15,19 @@ const Horses = props => {
       const horsesArr = [];
       snapshot.docChanges().forEach(change => {
         console.log("Change caught:", change.type, change.doc.data());
-        const data = change.doc.data();
-        // get id, title, first image, price, location, gender for each horse
-        const horse = {
-          id: change.doc.id,
-          title: data.title,
-          image: data.images ? data.images[0] : null,
-          price: data.price || "Contact seller",
-          location: data.location,
-          gender: data.gender
+        if (change.type === 'added') {
+          const data = change.doc.data();
+          // get id, title, first image, price, location, gender for each horse
+          const horse = {
+            id: change.doc.id,
+            title: data.title,
+            image: data.images ? data.images[0] : null,
+            price: data.price || "Contact seller",
+            location: data.location,
+            gender: data.gender
+          }
+          horsesArr.push(horse);
         }
-        horsesArr.push(horse);
       });
       setNewHorse(horsesArr);
     });
