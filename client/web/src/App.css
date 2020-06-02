@@ -262,7 +262,6 @@ main {
 
 .horse-card {
   display: grid;
-  /* grid-template-columns: max-content; */
   grid-template-rows: max-content;
   grid-template-areas:
     "horse-image"
