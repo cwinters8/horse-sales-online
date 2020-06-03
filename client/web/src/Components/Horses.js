@@ -24,10 +24,12 @@ const Horses = props => {
             image: data.images ? data.images[0] : null,
             price: data.price || "Contact seller",
             location: data.location,
-            gender: data.gender
+            gender: data.gender,
+            breed: data.breed
           }
           horsesArr.push(horse);
         }
+        // TODO: handle cases of update and delete
       });
       setNewHorse(horsesArr);
     });
@@ -74,6 +76,7 @@ const Horses = props => {
         <div className="horse-card-text">
           <h3>{props.title}</h3>
           <Price />
+          <p>{props.breed.join(', ')}</p>
           <p>{props.gender}</p>
           <Location />
         </div>
@@ -90,6 +93,7 @@ const Horses = props => {
       price={horse.price}
       gender={horse.gender}
       location={horse.location}
+      breed={horse.breed}
     />
   );
   return (
