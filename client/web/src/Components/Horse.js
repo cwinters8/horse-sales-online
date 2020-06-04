@@ -66,13 +66,13 @@ const Horse = props => {
           }
         })} showPlayButton={false} />
         <div className="ad-details">
-          <p>Horse's name: {name}</p>
+          {name ? <p>Horse's name: {name}</p> : null}
           <p>Price: <Price /></p>
-          <p>Breed: {breed.join(', ')}</p>
-          <p>Gender: {gender}</p>
-          <p>Height: {height}</p>
-          <p>Location: {location.label}</p>
-          <p>Description: {description}</p>
+          {breed ? <p>Breed: {breed.join(', ')}</p> : null}
+          {gender ? <p>Gender: {gender}</p> : null}
+          {height ? <p>Height: {height}</p> : null}
+          {location.label ? <p>Location: {location.label}</p> : null}
+          {description ? <p>Description: {description}</p> : null}
         </div>
       </div>
     </div>
