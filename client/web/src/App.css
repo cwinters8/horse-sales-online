@@ -295,3 +295,7 @@ main {
 .horse-card-text > * {
   margin-bottom: 0px;
 }
+
+.horse-card-text > a {
+  color: white;
+}

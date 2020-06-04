@@ -70,11 +70,12 @@ const Horses = props => {
         return null;
       }
     }
+    const link = `/horse/${props.id}`;
     return (
       <div className="horse-card">
-        <Image />
+        <a href={link}><Image /></a>
         <div className="horse-card-text">
-          <h3>{props.title}</h3>
+          <a href={link}><h3>{props.title}</h3></a>
           <Price />
           <p>{props.breed.join(', ')}</p>
           <p>{props.gender}</p>
@@ -88,6 +89,7 @@ const Horses = props => {
   const horseCards = horses.map(horse => 
     <HorseCard
       key={horse.id}
+      id={horse.id}
       title={horse.title}
       image={horse.image}
       price={horse.price}
