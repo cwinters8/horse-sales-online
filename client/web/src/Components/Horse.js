@@ -74,7 +74,6 @@ const Horse = props => {
           <p>Location: {location.label}</p>
           <p>Description: {description}</p>
         </div>
-        {/* <p className="ad-description">Description: {description}</p> */}
       </div>
     </div>
   )
