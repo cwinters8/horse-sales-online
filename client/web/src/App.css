@@ -301,3 +301,15 @@ main {
 .horse-card-text > a {
   color: white;
 }
+
+.ad-modify {
+  margin-bottom: 10px;
+}
+
+.ad-modify > .btn-primary {
+  margin-right: 5px;
+}
+
+.ad-modify > .btn-danger {
+  margin-left: 5px;
+}

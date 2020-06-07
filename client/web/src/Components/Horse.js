@@ -1,11 +1,13 @@
 import React, {useState, useEffect} from 'react';
 import ImageGallery from 'react-image-gallery';
 import NumberFormat from 'react-number-format';
+import {Button} from 'reactstrap';
 
 const Horse = props => {
   const db = props.firebase.firestore();
 
   // STATE
+  const [id, setId] = useState('');
   const [title, setTitle] = useState('');
   const [images, setImages] = useState([]);
   const [name, setName] = useState('');
@@ -15,6 +17,7 @@ const Horse = props => {
   const [height, setHeight] = useState(null);
   const [location, setLocation] = useState({});
   const [description, setDescription] = useState('');
+  const [ownerID, setOwnerID] = useState('');
   
   // HOOKS
   useEffect(() => {
@@ -22,6 +25,7 @@ const Horse = props => {
       if (doc.exists) {
         const data = doc.data();
         // process data
+        setId(doc.id);
         setTitle(data.title);
         setImages(data.images);
         setName(data.name);
@@ -31,6 +35,7 @@ const Horse = props => {
         setHeight(data.height);
         setLocation(data.location);
         setDescription(data.description);
+        setOwnerID(data.userID);
       } else {
         // TODO: handle case where data is not found - display a Not Found page/component
         console.log('document not found');
@@ -44,12 +49,35 @@ const Horse = props => {
     // eslint-disable-next-line
   }, [props.firebase]);
 
+  // FUNCTIONS
+  const edit = () => {
+    window.location.href = `/horse/${id}/edit`;
+  }
+
   // CHILD COMPONENTS
   const Price = () => {
     if (price !== null) {
       return <NumberFormat displayType="text" thousandSeparator={true} prefix="$" value={price} />
     } else {
       return "Contact seller"
+    }
+  }
+
+  const Modify = () => {
+    const currentUser = props.firebase.auth().currentUser;
+    let userID;
+    if (currentUser) {
+      userID = props.firebase.auth().currentUser.uid;
+    }
+    if (userID === ownerID) {
+      return (
+        <div className="ad-modify">
+          <Button color="primary" onClick={edit}>Edit</Button>
+          <Button color="danger">Delete</Button>
+        </div>
+      )
+    } else {
+      return null;
     }
   }
 
@@ -65,6 +93,7 @@ const Horse = props => {
           }
         })} showPlayButton={false} />
         <div className="ad-details">
+          <Modify />
           {name ? <p>Horse's name: {name}</p> : null}
           <p>Price: <Price /></p>
           {breed ? <p>Breed: {breed.join(', ')}</p> : null}

@@ -112,7 +112,8 @@ const App = () => {
             <Route exact path="/" render={() => <Main />} />
             <Route path="/login" render={() => <Login firebase={firebase} />} />
             <PrivateRoute path="/new-horse" render={() => <NewHorse firebase={firebase} firebaseAPIKey={firebaseConfig.apiKey} />} />
-            <Route path="/horse/:id" render={({match}) => <Horse horseID={match.params.id} firebase={firebase} />} />
+            <Route exact path="/horse/:id" render={({match}) => <Horse horseID={match.params.id} firebase={firebase} />} />
+            <PrivateRoute path="/horse/:id/edit" render={({match}) => <NewHorse horseID={match.params.id} firebase={firebase} firebaseAPIKey={firebaseConfig.apiKey} />} />
             <Route path="/horses" render={() => <Horses firebase={firebase} />} />
           </Switch>
         </BrowserRouter>

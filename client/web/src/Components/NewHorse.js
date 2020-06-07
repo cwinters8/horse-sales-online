@@ -51,6 +51,7 @@ const NewHorse = props => {
   }
 
   // STATE
+  const [id, setId] = useState('');
   const [title, setTitle] = usePersistedState('title', '');
   const [name, setName] = usePersistedState('horseName', '');
   const [breed, setBreed] = usePersistedState('breed', []);
@@ -69,6 +70,44 @@ const NewHorse = props => {
   const [navHandlerId, setNavHandlerId] = useState(null);
 
   // HOOKS
+  // if a horse ID is passed through props, get data from Firestore and populate state
+  useEffect(() => {
+    if (props.horseID) {
+      db.collection('horses').doc(props.horseID).get().then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          const genderData = {
+            label: data.gender,
+            value: data.gender
+          };
+          let breedData;
+          if (data.breed) {
+            breedData = data.breed.map(value => {
+              return {
+                label: value,
+                value
+              };
+            });
+          }
+          setId(doc.id);
+          setTitle(data.title);
+          setName(data.name);
+          setBreed(breedData);
+          setGender(genderData);
+          setImages(data.images);
+          setPrice(data.price);
+          setLocation(data.location);
+          setHeight(data.height);
+          setDescription(data.description || '');
+        } else {
+          console.log(`Document ID ${props.horseID} not found`);
+          // TODO: handle case when document doesn't exist
+        }
+      });
+    }
+  // eslint-disable-next-line
+  }, [props.firebase]);
+
   useEffect(() => {
     const placesAutocomplete = document.getElementsByClassName('google-places-autocomplete')[0];
     if (hidePlacesAutocomplete) {
@@ -292,7 +331,12 @@ const NewHorse = props => {
   const submit = event => {
     event.preventDefault();
     const userID = props.firebase.auth().currentUser.uid;
-    const docID = uuidv4();
+    let docID;
+    if (id) {
+      docID = id;
+    } else {
+      docID = uuidv4();
+    }
     // manipulate data to prepare it for Firestore
     const breedData = breed.map(value => {
       return value.value;
@@ -319,7 +363,9 @@ const NewHorse = props => {
     }).then(() => {
       setWriteError(false);
       clearAllPersistedState();
-      alert("Successfully submitted!")
+      alert("Successfully submitted!");
+      // route to the created or updated horse
+      window.location.href = `/horse/${docID}`;
     }).catch(error => {
       setWriteError(true);
       console.error('Error writing document: ', error);
