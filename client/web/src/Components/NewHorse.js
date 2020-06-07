@@ -93,6 +93,7 @@ const NewHorse = props => {
     setGender({});
     setImages([]);
     setPrice(null);
+    setPlaces([]);
     setLocation({});
     setHeight(null);
     setDescription('');
