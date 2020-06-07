@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import NumberFormat from 'react-number-format';
 
 const Horses = props => {
@@ -6,46 +6,45 @@ const Horses = props => {
 
   // STATE
   const [horses, setHorses] = useState([]);
-  const [newHorse, setNewHorse] = useState(null);
+  const stateRef = useRef();
+  stateRef.current = horses;
   
   // HOOKS
   // retrieving data
   useEffect(() => {
     const unsubscribe = db.collection('horses').onSnapshot(snapshot => {
-      const horsesArr = [];
       snapshot.docChanges().forEach(change => {
         console.log("Change caught:", change.type, change.doc.data());
+        const data = change.doc.data();
+        const horse = {
+          id: change.doc.id,
+          title: data.title,
+          image: data.images ? data.images[0] : null,
+          price: data.price || "Contact seller",
+          location: data.location,
+          gender: data.gender,
+          breed: data.breed
+        };
         if (change.type === 'added') {
-          const data = change.doc.data();
-          // get id, title, first image, price, location, gender for each horse
-          const horse = {
-            id: change.doc.id,
-            title: data.title,
-            image: data.images ? data.images[0] : null,
-            price: data.price || "Contact seller",
-            location: data.location,
-            gender: data.gender,
-            breed: data.breed
-          }
-          horsesArr.push(horse);
+          setHorses(stateRef.current.concat(horse));
+        } else if (change.type === 'modified') {
+          const newHorses = stateRef.current.map(currentHorse => {
+            if (change.doc.id === currentHorse.id) {
+              return horse;
+            } else {
+              return currentHorse;
+            }
+          });
+          setHorses(newHorses);
         }
-        // TODO: handle cases of update and delete
+        // TODO: handle delete case
       });
-      setNewHorse(horsesArr);
     });
     return () => {
       unsubscribe();
     }
   // eslint-disable-next-line
   }, [props.firebase]);
-
-  // set horses state
-  useEffect(() => {
-    if (newHorse) {
-      setHorses(horses.concat(newHorse));
-    }
-  // eslint-disable-next-line
-  }, [newHorse]);
 
   // CHILD COMPONENTS
   const HorseCard = props => {

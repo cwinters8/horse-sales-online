@@ -33,7 +33,7 @@ const Horse = props => {
         setLocation(data.location);
         setDescription(data.description);
       } else {
-        // TODO: handle case where data is not found
+        // TODO: handle case where data is not found - display a Not Found page/component
         console.log('document not found');
       }
     });
