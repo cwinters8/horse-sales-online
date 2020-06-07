@@ -20,7 +20,7 @@ const Horses = props => {
           id: change.doc.id,
           title: data.title,
           image: data.images ? data.images[0] : null,
-          price: data.price || "Contact seller",
+          price: data.price || "Contact seller", // data.price should be allowed to be 0
           location: data.location,
           gender: data.gender,
           breed: data.breed
@@ -36,8 +36,10 @@ const Horses = props => {
             }
           });
           setHorses(newHorses);
+        } else if (change.type === 'removed') {
+          const newHorses = stateRef.current.filter(currentHorse => horse.id !== currentHorse.id);
+          setHorses(newHorses);
         }
-        // TODO: handle delete case
       });
     });
     return () => {
