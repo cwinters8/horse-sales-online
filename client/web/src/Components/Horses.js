@@ -14,13 +14,13 @@ const Horses = props => {
   useEffect(() => {
     const unsubscribe = db.collection('horses').onSnapshot(snapshot => {
       snapshot.docChanges().forEach(change => {
-        console.log("Change caught:", change.type, change.doc.data());
         const data = change.doc.data();
+        console.log(data.price);
         const horse = {
           id: change.doc.id,
           title: data.title,
           image: data.images ? data.images[0] : null,
-          price: data.price || "Contact seller", // data.price should be allowed to be 0
+          price: data.price !== null ? data.price : "Contact seller",
           location: data.location,
           gender: data.gender,
           breed: data.breed

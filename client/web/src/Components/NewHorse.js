@@ -365,6 +365,7 @@ const NewHorse = props => {
 
     if (places.length > 0) {
       // return a select element with places
+      // FIXME: location Select not clearing after form submission
       return <Select className="horse-form-select horse-form-input places" options={places} onChange={onPlacesChange} value={location} placeholder="Select a location" />
     } else {
       return null;

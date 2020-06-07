@@ -21,7 +21,6 @@ const Horse = props => {
     const unsubscribe = db.collection('horses').doc(props.horseID).onSnapshot(doc => {
       if (doc.exists) {
         const data = doc.data();
-        console.log('Current data: ', data); // remove this
         // process data
         setTitle(data.title);
         setImages(data.images);
@@ -47,7 +46,7 @@ const Horse = props => {
 
   // CHILD COMPONENTS
   const Price = () => {
-    if (price) {
+    if (price !== null) {
       return <NumberFormat displayType="text" thousandSeparator={true} prefix="$" value={price} />
     } else {
       return "Contact seller"
