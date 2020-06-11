@@ -25,7 +25,7 @@ const ImagePreview = props => {
   if (props.images.length > 0) {
     return (
       <DragDropContext onDragEnd={dragEnd}>
-        <Droppable droppableId="droppable" direction="vertical">
+        <Droppable droppableId="droppable" direction="horizontal">
           {(provided) => (
             <div className="image-preview-container" ref={provided.innerRef} {...provided.droppableProps}>
               {props.images.map((image, index) => {
