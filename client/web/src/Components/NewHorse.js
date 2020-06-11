@@ -453,7 +453,7 @@ const NewHorse = props => {
         {/* TODO: Make at least one photo required, and limit to a certain number of images */}
         <Label className="horse-form-label">Images</Label>
       </div>
-      <ImagePreview images={images} removeImage={removeImage} firebaseStorageRef={storageRef} />
+      <ImagePreview images={images} setImages={setImages} removeImage={removeImage} firebaseStorageRef={storageRef} />
       <div className="horse-form-container">
         <Input id="photos" className="horse-form-input" type="file" onChange={onImageChange} multiple accept="image/*" />
         <Label for="photos" className="btn-primary btn">Choose photo(s)</Label>
