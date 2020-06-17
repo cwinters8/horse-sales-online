@@ -6,6 +6,8 @@ import Resizer from 'react-image-file-resizer';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import NumberFormat from 'react-number-format';
 
+// TODO: Write a scheduled function to cleanup images older than 1 day that are not stored in the db
+
 // components
 import ImagePreview from './ImagePreview';
 
@@ -39,32 +41,21 @@ const NewHorse = props => {
   const storageRef = props.firebase.storage().ref('horse-photos/');
   const db = props.firebase.firestore();
 
-  // custom hook to persist state in local storage
-  const usePersistedState = (key, defaultValue) => {
-    const [state, setState] = useState(
-      () => JSON.parse(localStorage.getItem(key)) || defaultValue
-    );
-    useEffect(() => {
-      localStorage.setItem(key, JSON.stringify(state));
-    }, [key, state]);
-    return [state, setState];
-  }
-
   // STATE
   const [id, setId] = useState('');
-  const [title, setTitle] = usePersistedState('title', '');
-  const [name, setName] = usePersistedState('horseName', '');
-  const [breed, setBreed] = usePersistedState('breed', []);
-  const [gender, setGender] = usePersistedState('gender', {});
-  const [images, setImages] = usePersistedState('images', []);
+  const [title, setTitle] = useState('');
+  const [name, setName] = useState('');
+  const [breed, setBreed] = useState([]);
+  const [gender, setGender] = useState({});
+  const [images, setImages] = useState([]);
   const [uploadError, setUploadError] = useState(false);
-  const [price, setPrice] = usePersistedState('price', null);
+  const [price, setPrice] = useState(null);
   const [places, setPlaces] = useState([]);
-  const [location, setLocation] = usePersistedState('location', {});
+  const [location, setLocation] = useState({});
   const [hidePlacesAutocomplete, setHidePlacesAutocomplete] = useState(false);
   const [pendingGetLocation, setPendingGetLocation] = useState(false);
-  const [height, setHeight] = usePersistedState('height', null);
-  const [description, setDescription] = usePersistedState('description', '');
+  const [height, setHeight] = useState(null);
+  const [description, setDescription] = useState('');
   const [writeError, setWriteError] = useState(false);
   const [abortFetch, setAbortFetch] = useState(false);
   const [navHandlerId, setNavHandlerId] = useState(null);
@@ -125,18 +116,6 @@ const NewHorse = props => {
   });
 
   // FUNCTIONS
-  const clearAllPersistedState = () => {
-    setTitle('');
-    setName('');
-    setBreed([]);
-    setGender({});
-    setImages([]);
-    setPrice(null);
-    setPlaces([]);
-    setLocation({});
-    setHeight(null);
-    setDescription('');
-  }
 
   // helper function that converts a value to null if its undefined
   const undefinedToNull = value => {
@@ -380,7 +359,6 @@ const NewHorse = props => {
       description: description === '' ? null : description
     }).then(() => {
       setWriteError(false);
-      clearAllPersistedState();
       alert("Successfully submitted!");
       // route to the created or updated horse
       window.location.href = `/horse/${docID}`;
