@@ -1,61 +1,65 @@
 import React from 'react';
 import {BsXCircle} from 'react-icons/bs';
 import {Spinner} from 'reactstrap';
-import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
+import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc';
+import arrayMove from 'array-move';
 
 const ImagePreview = props => {
-  const dragEnd = result => {
-    const {draggableId, source, destination} = result;
-    // check if the user dropped the image outside of a droppable
-    if (!destination) {
-      return;
-    }
-    // check if the user returned the item to its original position
-    if (destination.droppableId === source.droppableId && destination.index === source.index) {
-      return;
-    }
-
-    // reorder the array of images
-    const newImages = props.images;
-    const imageTarget = props.images[source.index];
-    newImages.splice(source.index, 1);
-    newImages.splice(destination.index, 0, imageTarget);
-    props.setImages(newImages);
+  const dragStart = () => {
+    document.body.style.cursor = 'grabbing';
   }
+  const dragEnd = ({oldIndex, newIndex}) => {
+    document.body.style.cursor = 'default';
+    // reorder the array of images
+    return props.setImages(arrayMove(props.images, oldIndex, newIndex));
+  }
+  const shouldCancelDrag = event => {
+    // cancel drag if the 'x' is clicked so that click event can propagate correctly
+    if (event.target.className.baseVal === 'x-circle') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  const ImageHandle = SortableHandle(({value}) => {
+    return <img className="image-preview" src={value.url} alt="Upload preview" />
+  });
+
+  const SortableImage = SortableElement(({value, sortIndex}) => {
+    return (
+      <div className="image-preview-individual-div">
+        <ImageHandle value={value} />
+        <BsXCircle className="x-circle" size={15} onClick={() => props.removeImage(sortIndex)} />
+      </div>
+    );
+  });
+
+  const SortableList = SortableContainer(({images}) => {
+    return (
+      <div className="image-preview-container">
+        {images.map((value, index) => {
+          if (value.loading) {
+            return (
+              <div key={value.id} className="image-preview-individual-div">
+                <Spinner color="primary" className="image-preview" />
+              </div>
+            );
+          }
+          if (value.error) {
+            alert(`Image ID ${value.id} failed to upload`);
+            return null;
+          }
+          return <SortableImage key={value.id} index={index} value={value} sortIndex={index} />
+        })}
+      </div>
+    )
+  });
+
   if (props.images.length > 0) {
     return (
-      <DragDropContext onDragEnd={dragEnd}>
-        <Droppable droppableId="droppable" direction="horizontal">
-          {(provided) => (
-            <div className="image-preview-container" ref={provided.innerRef} {...provided.droppableProps}>
-              {props.images.map((image, index) => {
-                if (image.loading) {
-                  return (
-                    <div key={image.id} className="image-preview-individual-div">
-                      <Spinner color="primary" className="image-preview" />
-                    </div>
-                  );
-                }
-                if (image.error) {
-                  return <p key={image.id}>Image ID {image.id} failed to upload</p>
-                }
-                return (
-                  <Draggable key={image.id} draggableId={image.id} index={index}>
-                    {(provided) => (
-                      <div className="image-preview-individual-div" ref={provided.innerRef} {...provided.draggableProps}>
-                        <img className="image-preview" src={image.url} alt="Upload preview" {...provided.dragHandleProps} />
-                        <BsXCircle className="x-circle" size={15} onClick={() => props.removeImage(index)} />
-                      </div>
-                    )}
-                  </Draggable>
-                )
-              })}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
-    )
+      <SortableList images={props.images} axis="xy" onSortStart={dragStart} onSortEnd={dragEnd} shouldCancelStart={shouldCancelDrag} />
+    );
   } else {
     return null;
   }

@@ -15,7 +15,6 @@ const Horses = props => {
     const unsubscribe = db.collection('horses').onSnapshot(snapshot => {
       snapshot.docChanges().forEach(change => {
         const data = change.doc.data();
-        console.log(data.price);
         const horse = {
           id: change.doc.id,
           title: data.title,

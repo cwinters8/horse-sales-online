@@ -152,6 +152,7 @@ main {
   max-height: 200px;
   max-width: 100%;
   justify-self: center;
+  cursor: grab;
 }
 
 .image-preview-individual-div {

@@ -218,14 +218,28 @@ const NewHorse = props => {
     });
   }
 
+  // workaround for when an image object does not have a path value
+  const buildImagePath = imageId => {
+    const userID = props.firebase.auth().currentUser.uid;
+    return `${userID}/${imageId}.jpg`;
+  }
+
   const removeImage = imageIndex => {
     // remove image from Firebase
-    const imageRef = storageRef.child(images[imageIndex].path);
+    const image = images[imageIndex];
+    const imageRef = storageRef.child(image.path || buildImagePath(image.id));
     imageRef.delete().then(() => {
-      // remove image from preview
       // first make a copy of the images state to update with
       const imagesToSplice = [...images];
       imagesToSplice.splice(imageIndex, 1);
+      // delete images from database if the horse has been stored and images state changes
+      if (props.horseID) {
+        db.collection('horses').doc(props.horseID).update({
+          images: mapImageData(imagesToSplice)
+        });
+      }
+      // remove image from preview
+      console.log('removing image from preview...');
       setImages(imagesToSplice);
     }).catch(error => {
       alert('Failed to delete image - please try again.');
@@ -327,6 +341,15 @@ const NewHorse = props => {
     return regex.test(values.value);
   }
 
+  const mapImageData = imageData => {
+    return imageData.map(value => {
+      return {
+        id: value.id,
+        url: value.url
+      }
+    });
+  }
+
   // handle form submission
   const submit = event => {
     event.preventDefault();
@@ -341,12 +364,7 @@ const NewHorse = props => {
     const breedData = breed.map(value => {
       return value.value;
     });
-    const imageData = images.map(value => {
-      return {
-        id: value.id,
-        url: value.url
-      }
-    });
+    const imageData = mapImageData(images);
 
     // write to Firestore
     db.collection('horses').doc(docID).set({
