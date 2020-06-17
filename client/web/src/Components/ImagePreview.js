@@ -58,7 +58,7 @@ const ImagePreview = props => {
 
   if (props.images.length > 0) {
     return (
-      <SortableList images={props.images} axis="xy" onSortStart={dragStart} onSortEnd={dragEnd} shouldCancelStart={shouldCancelDrag} />
+      <SortableList images={props.images} axis="xy" onSortStart={dragStart} onSortEnd={dragEnd} shouldCancelStart={shouldCancelDrag} useDragHandle={true} />
     );
   } else {
     return null;
