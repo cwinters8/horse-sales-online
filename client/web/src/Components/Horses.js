@@ -1,8 +1,11 @@
 import React, {useEffect, useState, useRef} from 'react';
 import NumberFormat from 'react-number-format';
 
-const Horses = props => {
-  const db = props.firebase.firestore();
+// firebase
+import firebase from '../Firebase';
+
+const Horses = () => {
+  const db = firebase.firestore();
 
   // STATE
   const [horses, setHorses] = useState([]);
@@ -45,7 +48,7 @@ const Horses = props => {
       unsubscribe();
     }
   // eslint-disable-next-line
-  }, [props.firebase]);
+  }, [firebase]);
 
   // CHILD COMPONENTS
   const HorseCard = props => {

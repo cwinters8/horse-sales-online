@@ -6,6 +6,9 @@ import Resizer from 'react-image-file-resizer';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import NumberFormat from 'react-number-format';
 
+// firebase
+import firebase, {firebaseApiKey} from '../Firebase';
+
 // TODO: Write a scheduled function to cleanup images older than 1 day that are not stored in the db
 
 // components
@@ -38,8 +41,8 @@ const genders = genderList.map((gender, index) => {
 const geocodeAPI = "https://maps.googleapis.com/maps/api/geocode/json";
 
 const NewHorse = props => {
-  const storageRef = props.firebase.storage().ref('horse-photos/');
-  const db = props.firebase.firestore();
+  const storageRef = firebase.storage().ref('horse-photos/');
+  const db = firebase.firestore();
 
   // STATE
   const [id, setId] = useState('');
@@ -97,7 +100,7 @@ const NewHorse = props => {
       });
     }
   // eslint-disable-next-line
-  }, [props.firebase]);
+  }, [firebase]);
 
   useEffect(() => {
     const placesAutocomplete = document.getElementsByClassName('google-places-autocomplete')[0];
@@ -110,7 +113,7 @@ const NewHorse = props => {
 
   // remove continue object from localStorage if the user is already logged in
   useEffect(() => {
-    if (props.firebase.auth().currentUser) {
+    if (firebase.auth().currentUser) {
       localStorage.removeItem('continue');
     }
   });
@@ -153,7 +156,7 @@ const NewHorse = props => {
           100,
           0,
           uri => {
-            const userID = props.firebase.auth().currentUser.uid;
+            const userID = firebase.auth().currentUser.uid;
             const fileName = `${fileID}.jpg`;
             const filePath = `${userID}/${fileName}`;
             // upload to firebase
@@ -199,7 +202,7 @@ const NewHorse = props => {
 
   // workaround for when an image object does not have a path value
   const buildImagePath = imageId => {
-    const userID = props.firebase.auth().currentUser.uid;
+    const userID = firebase.auth().currentUser.uid;
     return `${userID}/${imageId}.jpg`;
   }
 
@@ -251,7 +254,7 @@ const NewHorse = props => {
       setNavHandlerId(navigator.geolocation.watchPosition(position => {
         const coordinates = position.coords;
         if (!abortFetch) {
-          fetch(`${geocodeAPI}?latlng=${coordinates.latitude},${coordinates.longitude}&key=${props.firebaseAPIKey}`, {signal: signal}).then(res => {
+          fetch(`${geocodeAPI}?latlng=${coordinates.latitude},${coordinates.longitude}&key=${firebaseApiKey}`, {signal: signal}).then(res => {
             return res.json();
           }).then(response => {
             // clear the location in case a user has already typed one in
@@ -332,7 +335,7 @@ const NewHorse = props => {
   // handle form submission
   const submit = event => {
     event.preventDefault();
-    const userID = props.firebase.auth().currentUser.uid;
+    const userID = firebase.auth().currentUser.uid;
     let docID;
     if (id) {
       docID = id;
@@ -463,7 +466,7 @@ const NewHorse = props => {
         {/* Location */}
         <Label className="horse-form-label" for="location">Location</Label><Button onClick={getLocation} color="primary" className="location-button">Get current location</Button>
         <div className="location">
-          <GooglePlacesAutocomplete inputClassName="form-control" onSelect={setLocationState} apiKey={props.firebaseAPIKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} initialValue={location.label || ''} />
+          <GooglePlacesAutocomplete inputClassName="form-control" onSelect={setLocationState} apiKey={firebaseApiKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} initialValue={location.label || ''} />
           <GetLocation />
         </div>
         <div className="powered-by-google">

@@ -3,8 +3,11 @@ import ImageGallery from 'react-image-gallery';
 import NumberFormat from 'react-number-format';
 import {Button} from 'reactstrap';
 
+// firebase
+import firebase from '../Firebase';
+
 const Horse = props => {
-  const db = props.firebase.firestore();
+  const db = firebase.firestore();
 
   // STATE
   const [id, setId] = useState('');
@@ -47,7 +50,8 @@ const Horse = props => {
       unsubscribe();
     }
     // eslint-disable-next-line
-  }, [props.firebase]);
+  }, [firebase]);
+  
 
   // FUNCTIONS
   const edit = () => {
@@ -64,10 +68,12 @@ const Horse = props => {
   }
 
   const Modify = () => {
-    const currentUser = props.firebase.auth().currentUser;
+    const currentUser = firebase.auth().currentUser;
+    
     let userID;
     if (currentUser) {
-      userID = props.firebase.auth().currentUser.uid;
+      userID = firebase.auth().currentUser.uid;
+      
     }
     if (userID === ownerID) {
       return (

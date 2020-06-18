@@ -1,10 +1,8 @@
 import React, {useState} from 'react';
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
-import firebase from 'firebase/app';
-import 'firebase/analytics';
-import 'firebase/auth';
-import 'firebase/firestore';
-import 'firebase/storage';
+
+// firebase
+import firebase from './Firebase';
 
 // styles
 import './App.css';
@@ -24,20 +22,6 @@ import dressage from './images/dressage.png';
 import canter from './images/loping.png';
 import cowPony from './images/CowPony.png';
 import trail from './images/trailhorse.png';
-
-// firebase config
-const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_APIKEY,
-  authDomain: process.env.REACT_APP_FIREBASE_AUTHDOMAIN,
-  databaseURL: process.env.REACT_APP_FIREBASE_DATABASEURL,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECTID,
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGEBUCKET,
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGINGSENDERID,
-  appId: process.env.REACT_APP_FIREBASE_APPID,
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENTID
-};
-firebase.initializeApp(firebaseConfig);
-firebase.analytics();
 
 const App = () => {
   const [userName, setUserName] = useState(null);
@@ -110,11 +94,11 @@ const App = () => {
         <BrowserRouter>
           <Switch>
             <Route exact path="/" render={() => <Main />} />
-            <Route path="/login" render={() => <Login firebase={firebase} />} />
-            <PrivateRoute path="/new-horse" render={() => <NewHorse firebase={firebase} firebaseAPIKey={firebaseConfig.apiKey} />} />
-            <Route exact path="/horse/:id" render={({match}) => <Horse horseID={match.params.id} firebase={firebase} />} />
-            <PrivateRoute path="/horse/:id/edit" render={({match}) => <NewHorse horseID={match.params.id} firebase={firebase} firebaseAPIKey={firebaseConfig.apiKey} />} />
-            <Route path="/horses" render={() => <Horses firebase={firebase} />} />
+            <Route path="/login" render={() => <Login />} />
+            <PrivateRoute path="/new-horse" render={() => <NewHorse />} />
+            <Route exact path="/horse/:id" render={({match}) => <Horse horseID={match.params.id} />} />
+            <PrivateRoute path="/horse/:id/edit" render={({match}) => <NewHorse horseID={match.params.id} />} />
+            <Route path="/horses" render={() => <Horses />} />
           </Switch>
         </BrowserRouter>
       </main>
