@@ -16,7 +16,9 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENTID
 };
 firebase.initializeApp(firebaseConfig);
-firebase.analytics();
+if (process.env.NODE_ENV !== 'test') {
+  firebase.analytics();
+}
 
 const firebaseApiKey = firebaseConfig.apiKey;
 export {firebaseApiKey};

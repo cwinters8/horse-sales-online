@@ -3,6 +3,7 @@ import {BrowserRouter, Switch, Route} from 'react-router-dom';
 
 // firebase
 import firebase from './Firebase';
+import mockFirebaseSdk from './tests/firebaseMockSDK';
 
 // styles
 import './App.css';
@@ -23,11 +24,13 @@ import canter from './images/loping.png';
 import cowPony from './images/CowPony.png';
 import trail from './images/trailhorse.png';
 
+const firebaseSdk = process.env.NODE_ENV === 'test' ? mockFirebaseSdk : firebase;
+
 const App = () => {
   const [userName, setUserName] = useState(null);
 
   // check if a user is signed in
-  firebase.auth().onAuthStateChanged(user => {
+  firebaseSdk.auth().onAuthStateChanged(user => {
     if (user) {
       setUserName(user.displayName);
       window.localStorage.setItem('user', user);
@@ -39,7 +42,7 @@ const App = () => {
 
   const signOut = event => {
     event.preventDefault();
-    firebase.auth().signOut().then(() => {
+    firebaseSdk.auth().signOut().then(() => {
       // route to home on sign out for now
       window.location.href = '/';
     }); 
