@@ -3,7 +3,7 @@ import 'firebase/analytics';
 import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
-import mockFirebaseSdk from './tests/firebaseMockSDK';
+// import mockFirebaseSdk from './tests/firebaseMockSDK';
 
 // firebase config
 const firebaseConfig = {
@@ -24,6 +24,6 @@ if (process.env.NODE_ENV !== 'test') {
 const firebaseApiKey = firebaseConfig.apiKey;
 export {firebaseApiKey};
 
-const firebaseSdk = process.env.NODE_ENV === 'test' ? mockFirebaseSdk : firebase;
+// const firebaseSdk = process.env.NODE_ENV === 'test' ? mockFirebaseSdk : firebase;
 
-export default firebaseSdk;
+export default firebase;
