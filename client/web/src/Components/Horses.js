@@ -75,7 +75,7 @@ const Horses = () => {
     }
     const link = `/horse/${props.id}`;
     return (
-      <div className="horse-card">
+      <div className="horse-card" data-testid="horseCard">
         <a href={link}><Image /></a>
         <div className="horse-card-text">
           <a href={link}><h3>{props.title}</h3></a>
