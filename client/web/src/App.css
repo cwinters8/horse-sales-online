@@ -241,12 +241,14 @@ main {
     margin-top: 20px;
     margin-left: 20px;
   }
+  .image-gallery {
+    width: 100vw !important;
+  }
 }
 
 .image-gallery {
   grid-area: gallery;
-  justify-self: center;
-  max-width: 100vw;
+  width: 50vw;
 }
 
 .ad-details {
