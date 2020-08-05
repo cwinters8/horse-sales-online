@@ -90,6 +90,7 @@ const Horse = props => {
   // DOM
   return (
     <div>
+      <a href="/horses">Back to listings</a>
       <h2 className="ad-title">{title}</h2>
       <div className="ad-main">
         <ImageGallery items={images.map(image => {
