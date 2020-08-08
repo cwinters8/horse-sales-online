@@ -10,7 +10,10 @@ const Horses = () => {
 
   // STATE
   const [horses, setHorses] = useState([]);
+  const [filteredHorses, setFilteredHorses] = useState([]);
+  const [filtering, setFiltering] = useState(false);
   const [advancedSearch, setAdvancedSearch] = useState(false);
+  const [generalSearchInput, setGeneralSearchInput] = useState('');
   const stateRef = useRef();
   stateRef.current = horses;
   
@@ -51,6 +54,43 @@ const Horses = () => {
     }
   // eslint-disable-next-line
   }, [firebase]);
+
+  // searching/filtering horses
+  useEffect(() => {
+    if (generalSearchInput && horses.length) {
+      setFiltering(true);
+      const input = generalSearchInput.toLowerCase();
+      setFilteredHorses(horses.filter(horse => {
+        // title
+        if (horse.title.toLowerCase().includes(input)) {
+          return true;
+        }
+        // gender
+        if (horse.gender.toLowerCase().includes(input)) {
+          return true;
+        }
+        // price
+        if (horse.price.toString().includes(input)) {
+          return true;
+        }
+        // location
+        if (horse.location.label.toLowerCase().includes(input)) {
+          return true;
+        }
+        // breed
+        for (let j=0; j < horse.breed.length; j++) {
+          if (horse.breed[j].toLowerCase().includes(input)) {
+            return true;
+          }
+        }
+        // catch all in case nothing returns true
+        return false;
+      }));
+    } else {
+      setFiltering(false);
+    }
+  // eslint-disable-next-line
+  }, [generalSearchInput]);
 
   // CHILD COMPONENTS
   const HorseCard = props => {
@@ -93,7 +133,7 @@ const Horses = () => {
   const AdvancedSearch = () => {
     if (advancedSearch) {
       return (
-        <Form className="advanced-search-container">
+        <div className="advanced-search-container">
           <div>
             <Label for="breed">Breed</Label>
             <Input id="breed" />
@@ -114,7 +154,7 @@ const Horses = () => {
             <Label for="height">Height</Label>
             <Input id="height" />
           </div>
-        </Form>
+        </div>
       );
     } else {
       return null;
@@ -122,7 +162,8 @@ const Horses = () => {
   }
 
   // DOM
-  const horseCards = horses.map(horse => 
+  const horsesToDisplay = filtering ? filteredHorses : horses;
+  const horseCards = horsesToDisplay.map(horse =>
     <HorseCard
       key={horse.id}
       id={horse.id}
@@ -138,7 +179,7 @@ const Horses = () => {
     <div>
       <div>
         <Form className="search-form">
-          <Input placeholder="Search..." className="search" />
+          <Input placeholder="Search..." className="search" onChange={event => setGeneralSearchInput(event.target.value)} value={generalSearchInput} />
           <Button color="primary" className="advanced-search" onClick={() => setAdvancedSearch(!advancedSearch)}>Advanced Search</Button>
           <AdvancedSearch />
         </Form>
