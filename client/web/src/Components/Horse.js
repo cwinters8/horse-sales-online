@@ -73,7 +73,6 @@ const Horse = props => {
     let userID;
     if (currentUser) {
       userID = firebase.auth().currentUser.uid;
-      
     }
     if (userID === ownerID) {
       return (

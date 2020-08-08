@@ -1,5 +1,6 @@
 import React, {useEffect, useState, useRef} from 'react';
 import NumberFormat from 'react-number-format';
+import {Form, Label, Input, Button} from 'reactstrap';
 
 // firebase
 import firebase from '../Firebase';
@@ -9,6 +10,7 @@ const Horses = () => {
 
   // STATE
   const [horses, setHorses] = useState([]);
+  const [advancedSearch, setAdvancedSearch] = useState(false);
   const stateRef = useRef();
   stateRef.current = horses;
   
@@ -88,6 +90,37 @@ const Horses = () => {
     );
   }
 
+  const AdvancedSearch = () => {
+    if (advancedSearch) {
+      return (
+        <Form className="advanced-search-container">
+          <div>
+            <Label for="breed">Breed</Label>
+            <Input id="breed" />
+          </div>
+          <div>
+            <Label for="location">Location</Label>
+            <Input id="location" />
+          </div>
+          <div>
+            <Label for="price">Price</Label>
+            <Input id="price" />
+          </div>
+          <div>
+            <Label for="gender">Gender</Label>
+            <Input id="gender" />
+          </div>
+          <div>
+            <Label for="height">Height</Label>
+            <Input id="height" />
+          </div>
+        </Form>
+      );
+    } else {
+      return null;
+    }
+  }
+
   // DOM
   const horseCards = horses.map(horse => 
     <HorseCard
@@ -102,8 +135,17 @@ const Horses = () => {
     />
   );
   return (
-    <div className="horse-list">
-      {horseCards}
+    <div>
+      <div>
+        <Form className="search-form">
+          <Input placeholder="Search..." className="search" />
+          <Button color="primary" className="advanced-search" onClick={() => setAdvancedSearch(!advancedSearch)}>Advanced Search</Button>
+          <AdvancedSearch />
+        </Form>
+      </div>
+      <div className="horse-list">
+        {horseCards}
+      </div>
     </div>
   );
 }
