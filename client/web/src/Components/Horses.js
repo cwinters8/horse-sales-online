@@ -61,36 +61,54 @@ const Horses = () => {
       setFiltering(true);
       const input = generalSearchInput.toLowerCase();
       setFilteredHorses(horses.filter(horse => {
-        // title
-        if (horse.title.toLowerCase().includes(input)) {
-          return true;
-        }
-        // gender
-        if (horse.gender.toLowerCase().includes(input)) {
-          return true;
-        }
-        // price
-        if (horse.price.toString().includes(input)) {
-          return true;
-        }
-        // location
-        if (horse.location.label.toLowerCase().includes(input)) {
-          return true;
-        }
-        // breed
-        for (let j=0; j < horse.breed.length; j++) {
-          if (horse.breed[j].toLowerCase().includes(input)) {
-            return true;
-          }
-        }
-        // catch all in case nothing returns true
-        return false;
+        const searchTerms = input.split(' ');
+        return horseContainsArrayElements(horse, searchTerms);
       }));
     } else {
       setFiltering(false);
     }
   // eslint-disable-next-line
   }, [generalSearchInput]);
+
+  // FUNCTIONS
+  const horseContainsArrayElements = (horse, array) => {
+    for (let i=0; i < array.length; i++) {
+      const result = horseContainsString(horse, array[i]);
+      // return false if the horse fails to contain any element in the array
+      if (!result) {
+        return false;
+      }
+    }
+    // return true if the horse contained all elements of the array
+    return true;
+  }
+
+  const horseContainsString = (horse, string) => {
+    // title
+    if (horse.title.toLowerCase().includes(string)) {
+      return true;
+    }
+    // gender
+    if (horse.gender.toLowerCase().includes(string)) {
+      return true;
+    }
+    // price
+    if (horse.price.toString().includes(string)) {
+      return true;
+    }
+    // location
+    if (horse.location.label.toLowerCase().includes(string)) {
+      return true;
+    }
+    // breed
+    for (let i=0; i < horse.breed.length; i++) {
+      if (horse.breed[i].toLowerCase().includes(string)) {
+        return true;
+      }
+    }
+    // catch all in case nothing returns true
+    return false;
+  }
 
   // CHILD COMPONENTS
   const HorseCard = props => {
