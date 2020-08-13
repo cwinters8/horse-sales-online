@@ -340,6 +340,7 @@ main {
   width: 300px;
   margin-left: auto;
   margin-right: auto;
+  text-align: left;
 }
 
 .advanced-search-container label {

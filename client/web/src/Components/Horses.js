@@ -1,6 +1,7 @@
 import React, {useEffect, useState, useRef} from 'react';
 import NumberFormat from 'react-number-format';
 import {Form, Label, Input, Button} from 'reactstrap';
+import Select from 'react-select';
 
 // firebase
 import firebase from '../Firebase';
@@ -14,6 +15,8 @@ const Horses = () => {
   const [filtering, setFiltering] = useState(false);
   const [advancedSearch, setAdvancedSearch] = useState(false);
   const [generalSearchInput, setGeneralSearchInput] = useState('');
+  const [breeds, setBreeds] = useState([]);
+  const [breedFilter, setBreedFilter] = useState([]);
   const stateRef = useRef();
   stateRef.current = horses;
   
@@ -30,7 +33,8 @@ const Horses = () => {
           price: data.price !== null ? data.price : "Contact seller",
           location: data.location,
           gender: data.gender,
-          breed: data.breed
+          breed: data.breed,
+          filteredOn: []
         };
         if (change.type === 'added') {
           setHorses(stateRef.current.concat(horse));
@@ -70,16 +74,41 @@ const Horses = () => {
   // eslint-disable-next-line
   }, [generalSearchInput]);
 
+  // get list of individual breeds from horses data
+  useEffect(() => {
+    if (horses.length) {
+      const uniqueBreeds = horses.map(horse => horse.breed).flat().reduce((limitedBreeds, breed) => {
+        if (!limitedBreeds.includes(breed)) {
+          limitedBreeds.push(breed);
+        }
+        return limitedBreeds;
+      }, []);
+      setBreeds(uniqueBreeds.map(breed => {
+        return {
+          label: breed,
+          value: breed
+        }
+      }));
+    }
+  }, [horses]);
+
   // FUNCTIONS
   const horseContainsArrayElements = (horse, array) => {
+    const generalFilterIndex = horse.filteredOn.findIndex(filter => filter === 'general');
     for (let i=0; i < array.length; i++) {
       const result = horseContainsString(horse, array[i]);
       // return false if the horse fails to contain any element in the array
       if (!result) {
+        if (generalFilterIndex >= 0) {
+          horse.filteredOn.splice(generalFilterIndex, 1);
+        }
         return false;
       }
     }
     // return true if the horse contained all elements of the array
+    if (generalFilterIndex < 0) {
+      horse.filteredOn.push('general');
+    }
     return true;
   }
 
@@ -108,6 +137,46 @@ const Horses = () => {
     }
     // catch all in case nothing returns true
     return false;
+  }
+
+  const filterOnBreed = breedsToSearch => {
+    setBreedFilter(breedsToSearch);
+    if (breedsToSearch && breedsToSearch.length) {
+      const breedValues = breedsToSearch.map(breed => breed.value);
+      const horsesToFilter = filteredHorses.length ? filteredHorses : horses;
+      // update filteredHorses state based on matching breeds
+      setFiltering(true);
+      const matchedHorses = horsesToFilter.filter(horse => {
+        // loop through horse's breeds
+        for (let i=0; i < horse.breed.length; i++) {
+          // check if breedValues includes horse's breed
+          if (breedValues.includes(horse.breed[i])) {
+            if (!horse.filteredOn.includes('breed')) {
+              horse.filteredOn.push('breed');
+            }
+            return true;
+          }
+        }
+        return false;
+      });
+      setFilteredHorses(matchedHorses);
+    } else {
+      // remove 'breed' key from filteredOn for all horses
+      horses.forEach(horse => {
+        const breedFilterIndex = horse.filteredOn.findIndex(filter => filter === 'breed');
+        if (breedFilterIndex >= 0) {
+          horse.filteredOn.splice(breedFilterIndex, 1);
+        }
+      });
+      // display all filtered if there are any horses that have been filtered
+      const filtered = horses.filter(horse => horse.filteredOn.length);
+      if (filtered.length) {
+        setFilteredHorses(filtered);
+      } else {
+        // if no horses have been filtered, display all
+        setFiltering(false);
+      }
+    }
   }
 
   // CHILD COMPONENTS
@@ -154,7 +223,7 @@ const Horses = () => {
         <div className="advanced-search-container">
           <div>
             <Label for="breed">Breed</Label>
-            <Input id="breed" />
+            <Select className="horse-form-select" options={breeds} isMulti={true} onChange={filterOnBreed} value={breedFilter} />
           </div>
           <div>
             <Label for="location">Location</Label>
