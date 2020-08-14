@@ -179,6 +179,10 @@ const Horses = () => {
     }
   }
 
+  // const getLocation = () => {
+
+  // }
+
   // CHILD COMPONENTS
   const HorseCard = props => {
     const Image = () => {
@@ -226,8 +230,9 @@ const Horses = () => {
             <Select className="horse-form-select" options={breeds} isMulti={true} onChange={filterOnBreed} value={breedFilter} />
           </div>
           <div>
-            <Label for="location">Location</Label>
-            <Input id="location" />
+            {/* <Label for="location">Location</Label>
+            <Button onClick={getLocation} color="primary" className="location-button">Get current location</Button>
+            <Input id="location" /> */}
           </div>
           <div>
             <Label for="price">Price</Label>

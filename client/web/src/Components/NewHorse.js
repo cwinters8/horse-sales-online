@@ -1,13 +1,14 @@
 import React, {useState, useEffect} from 'react';
-import {Form, Input, Label, Button, Spinner} from 'reactstrap';
+import {Form, Input, Label, Button} from 'reactstrap';
 import Select from 'react-select';
 import {v4 as uuidv4} from 'uuid';
 import Resizer from 'react-image-file-resizer';
-import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import NumberFormat from 'react-number-format';
 
+import Location from './Location';
+
 // firebase
-import firebase, {firebaseApiKey} from '../Firebase';
+import firebase from '../Firebase';
 
 // TODO: Write a scheduled function to cleanup images older than 1 day that are not stored in the db
 
@@ -17,9 +18,6 @@ import ImagePreview from './ImagePreview';
 // data
 import breedList from '../data/horseBreeds.json';
 import genderList from '../data/HorseGender.json';
-
-// images
-import poweredByGoogle from '../images/powered_by_google_on_non_white.png';
 
 // for horse breed select
 const breeds = breedList.map((breed, index) => {
@@ -37,9 +35,6 @@ const genders = genderList.map((gender, index) => {
   }
 });
 
-// API URL for Google Maps Geocoding
-const geocodeAPI = "https://maps.googleapis.com/maps/api/geocode/json";
-
 const NewHorse = props => {
   const storageRef = firebase.storage().ref('horse-photos/');
   const db = firebase.firestore();
@@ -53,15 +48,10 @@ const NewHorse = props => {
   const [images, setImages] = useState([]);
   const [uploadError, setUploadError] = useState(false);
   const [price, setPrice] = useState(null);
-  const [places, setPlaces] = useState([]);
   const [location, setLocation] = useState({});
-  const [hidePlacesAutocomplete, setHidePlacesAutocomplete] = useState(false);
-  const [pendingGetLocation, setPendingGetLocation] = useState(false);
   const [height, setHeight] = useState(null);
   const [description, setDescription] = useState('');
   const [writeError, setWriteError] = useState(false);
-  const [abortFetch, setAbortFetch] = useState(false);
-  const [navHandlerId, setNavHandlerId] = useState(null);
 
   // HOOKS
   // if a horse ID is passed through props, get data from Firestore and populate state
@@ -101,15 +91,6 @@ const NewHorse = props => {
     }
   // eslint-disable-next-line
   }, [firebase]);
-
-  useEffect(() => {
-    const placesAutocomplete = document.getElementsByClassName('google-places-autocomplete')[0];
-    if (hidePlacesAutocomplete) {
-      placesAutocomplete.style.display = 'none';
-    } else {
-      placesAutocomplete.style.display = 'block';
-    }
-  }, [hidePlacesAutocomplete]);
 
   // remove continue object from localStorage if the user is already logged in
   useEffect(() => {
@@ -235,89 +216,6 @@ const NewHorse = props => {
     input.value = '';
   }
 
-  const setLocationState = data => {
-    setLocation({
-      value: data.id,
-      label: data.description
-    });
-  }
-
-  const controller = new window.AbortController();
-  const signal = controller.signal;
-  signal.addEventListener('abort', () => {
-    // set abortFetch back to false after the fetch has been aborted
-    setAbortFetch(false);
-  });
-  const getLocation = () => {
-    if ('geolocation' in navigator) {
-      setPendingGetLocation(true);
-      setNavHandlerId(navigator.geolocation.watchPosition(position => {
-        const coordinates = position.coords;
-        if (!abortFetch) {
-          fetch(`${geocodeAPI}?latlng=${coordinates.latitude},${coordinates.longitude}&key=${firebaseApiKey}`, {signal: signal}).then(res => {
-            return res.json();
-          }).then(response => {
-            // clear the location in case a user has already typed one in
-            setLocation({});
-            // parse results and return city options to user in a select component
-            const results = response.results;
-            if (results.length > 0) {
-              const placeOptions = [];
-              results.forEach((location, index) => {
-                const splitAddress = location.formatted_address.split(', ');
-                // filter out anything long enough to be a full street address. Only want to return city/state/county/country etc.
-                if (splitAddress.length < 4) {
-                  placeOptions.push({
-                    label: location.formatted_address,
-                    value: location.place_id
-                  });
-                }
-              });
-              placeOptions.push({
-                label: 'Other',
-                value: 'other'
-              });
-              setPlaces(placeOptions);
-              setPendingGetLocation(false);
-            }
-          }).catch(err => {
-            console.error(err);
-            setPendingGetLocation(false);
-          });
-        } else {
-          console.log('fetch aborted');
-          setPendingGetLocation(false);
-        }
-      }, error => {
-        console.error(error);
-        setPendingGetLocation(false);
-      }));
-    }
-  }
-
-  const cancelGetLocation = () => {
-    console.log('aborting fetch...');
-    setAbortFetch(true);
-    if (navHandlerId) {
-      navigator.geolocation.clearWatch(navHandlerId);
-    }
-    controller.abort();
-    setPendingGetLocation(false);
-  }
-
-  const onPlacesChange = place => {
-    if (place.value === 'other') {
-      setPlaces([]);
-      setLocation({});
-    } else {
-      setLocation({
-        value: place.value,
-        label: place.label
-      });
-    }
-    return place;
-  }
-
   const checkHeight = values => {
     const regex = /^\d?\d?\.?[0-3]?$/;
     return regex.test(values.value);
@@ -380,45 +278,6 @@ const NewHorse = props => {
     }
   }
 
-  const GetLocation = () => {
-    // this really ugly workaround is needed because useEffect is needed to set parent state, and useEffect cannot be called conditionally
-    let setter;
-    if (places.length > 0 || pendingGetLocation) {
-      setter = true;
-    } else {
-      setter = false;
-    }
-    useEffect(() => {
-      setHidePlacesAutocomplete(setter);
-    }, [setter]);
-
-    useEffect(() => {
-      if (places.length > 0) {
-        if (Object.keys(location).length === 0) {
-          setLocation(places[0])
-        }
-      }
-    });
-
-    if (pendingGetLocation) {
-      return (
-        <div>
-          <Spinner color="primary" />
-          <Button className="cancel" color="danger" onClick={cancelGetLocation}>Cancel</Button>
-        </div>
-      )
-    }
-
-    if (places.length > 0) {
-      // return a select element with places
-      // FIXME: location Select not clearing after form submission
-      return <Select className="horse-form-select horse-form-input places" options={places} onChange={onPlacesChange} value={location} placeholder="Select a location" />
-    } else {
-      return null;
-      // TODO: once conditional rendering works for the Google Places Autocomplete library, render it here instead of hiding it
-    }
-  }
-
   const WriteError = () => {
     if (writeError) {
       // TODO: create a Contact Us page
@@ -464,14 +323,7 @@ const NewHorse = props => {
         <NumberFormat className="horse-form-input form-control" id="price" thousandSeparator={true} decimalScale={0} allowNegative={false} prefix="$" onValueChange={values => setPrice(undefinedToNull(values.floatValue))} value={price} />
 
         {/* Location */}
-        <Label className="horse-form-label" for="location">Location</Label><Button onClick={getLocation} color="primary" className="location-button">Get current location</Button>
-        <div className="location">
-          <GooglePlacesAutocomplete inputClassName="form-control" onSelect={setLocationState} apiKey={firebaseApiKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} initialValue={location.label || ''} />
-          <GetLocation />
-        </div>
-        <div className="powered-by-google">
-          <img src={poweredByGoogle} alt="Powered by Google" />
-        </div>
+        <Location setLocation={setLocation} location={location} />
 
         {/* Height */}
         <Label className="horse-form-label" for="height">Height (hh)</Label>
