@@ -3,6 +3,9 @@ import NumberFormat from 'react-number-format';
 import {Form, Label, Input, Button} from 'reactstrap';
 import Select from 'react-select';
 
+// import Location from './Location';
+import Location from './Location';
+
 // firebase
 import firebase from '../Firebase';
 
@@ -31,7 +34,7 @@ const Horses = () => {
           title: data.title,
           image: data.images ? data.images[0] : null,
           price: data.price !== null ? data.price : "Contact seller",
-          location: data.location,
+          // location: data.location,
           gender: data.gender,
           breed: data.breed,
           filteredOn: []
@@ -126,9 +129,9 @@ const Horses = () => {
       return true;
     }
     // location
-    if (horse.location.label.toLowerCase().includes(string)) {
-      return true;
-    }
+    // if (horse.location.label.toLowerCase().includes(string)) {
+    //   return true;
+    // }
     // breed
     for (let i=0; i < horse.breed.length; i++) {
       if (horse.breed[i].toLowerCase().includes(string)) {
@@ -179,10 +182,6 @@ const Horses = () => {
     }
   }
 
-  // const getLocation = () => {
-
-  // }
-
   // CHILD COMPONENTS
   const HorseCard = props => {
     const Image = () => {
@@ -199,13 +198,13 @@ const Horses = () => {
         return <p>{props.price}</p>
       }
     }
-    const Location = () => {
-      if (props.location) {
-        return <p>{props.location.label}</p>
-      } else {
-        return null;
-      }
-    }
+    // const HorseLocation = () => {
+    //   if (props.location) {
+    //     return <p>{props.location.label}</p>
+    //   } else {
+    //     return null;
+    //   }
+    // }
     const link = `/horse/${props.id}`;
     return (
       <div className="horse-card">
@@ -215,14 +214,20 @@ const Horses = () => {
           <Price />
           <p>{props.breed.join(', ')}</p>
           <p>{props.gender}</p>
-          <Location />
+          {/* <HorseLocation /> */}
         </div>
       </div>
     );
   }
 
   const AdvancedSearch = () => {
-    if (advancedSearch) {
+    const [location, setLocation] = useState({});
+
+    useEffect(() => {
+      console.log('location value from Adv Search component:', location);
+    }, [location]);
+
+    // if (advancedSearch) {
       return (
         <div className="advanced-search-container">
           <div>
@@ -230,9 +235,7 @@ const Horses = () => {
             <Select className="horse-form-select" options={breeds} isMulti={true} onChange={filterOnBreed} value={breedFilter} />
           </div>
           <div>
-            {/* <Label for="location">Location</Label>
-            <Button onClick={getLocation} color="primary" className="location-button">Get current location</Button>
-            <Input id="location" /> */}
+            <Location setLocation={setLocation} location={location} />
           </div>
           <div>
             <Label for="price">Price</Label>
@@ -248,9 +251,9 @@ const Horses = () => {
           </div>
         </div>
       );
-    } else {
-      return null;
-    }
+    // } else {
+    //   return null;
+    // }
   }
 
   // DOM
@@ -263,7 +266,7 @@ const Horses = () => {
       image={horse.image}
       price={horse.price}
       gender={horse.gender}
-      location={horse.location}
+      // location={horse.location}
       breed={horse.breed}
     />
   );

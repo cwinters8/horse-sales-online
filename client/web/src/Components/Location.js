@@ -15,20 +15,9 @@ const geocodeAPI = "https://maps.googleapis.com/maps/api/geocode/json";
 const Location = props => {
   // STATE
   const [places, setPlaces] = useState([]);
-  const [hidePlacesAutocomplete, setHidePlacesAutocomplete] = useState(false);
   const [pendingGetLocation, setPendingGetLocation] = useState(false);
   const [abortFetch, setAbortFetch] = useState(false);
   const [navHandlerId, setNavHandlerId] = useState(null);
-
-  // HOOKS
-  useEffect(() => {
-    const placesAutocomplete = document.getElementsByClassName('google-places-autocomplete')[0];
-    if (hidePlacesAutocomplete) {
-      placesAutocomplete.style.display = 'none';
-    } else {
-      placesAutocomplete.style.display = 'block';
-    }
-  }, [hidePlacesAutocomplete]);
 
   // FUNCTIONS
   const setLocationState = data => {
@@ -116,21 +105,10 @@ const Location = props => {
 
   // CHILD COMPONENTS
   const GetLocation = () => {
-    // this really ugly workaround is needed because useEffect is needed to set parent state, and useEffect cannot be called conditionally
-    let setter;
-    if (places.length > 0 || pendingGetLocation) {
-      setter = true;
-    } else {
-      setter = false;
-    }
-    useEffect(() => {
-      setHidePlacesAutocomplete(setter);
-    }, [setter]);
-
     useEffect(() => {
       if (places.length > 0) {
         if (Object.keys(props.location).length === 0) {
-          props.setLocation(places[0])
+          props.setLocation(places[0]);
         }
       }
     });
@@ -142,23 +120,22 @@ const Location = props => {
           <Button className="cancel" color="danger" onClick={cancelGetLocation}>Cancel</Button>
         </div>
       )
-    }
-
-    if (places.length > 0) {
-      // return a select element with places
-      // FIXME: location Select not clearing after form submission
-      return <Select className="horse-form-select horse-form-input places" options={places} onChange={onPlacesChange} value={props.location} placeholder="Select a location" />
     } else {
-      return null;
-      // TODO: once conditional rendering works for the Google Places Autocomplete library, render it here instead of hiding it
-    }
+      if (places.length > 0) {
+        // return a select element with places
+        // FIXME: location Select not clearing after form submission
+        return <Select className="horse-form-select horse-form-input places" options={places} onChange={onPlacesChange} value={props.location} placeholder="Select a location" />
+      } else {
+        return <GooglePlacesAutocomplete inputClassName="form-control" onSelect={setLocationState} apiKey={firebaseApiKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} initialValue={props.location.label || ''} />
+      }
+    }    
   }
 
   return (
     <div>
-      <Label className="horse-form-label" for="location">Location</Label><Button onClick={getLocation} color="primary" className="location-button">Get current location</Button>
+      <Label className="horse-form-label" for="location">Location</Label>
+      <Button onClick={getLocation} color="primary" className="location-button">Get current location</Button>
       <div className="location">
-        <GooglePlacesAutocomplete inputClassName="form-control" onSelect={setLocationState} apiKey={firebaseApiKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} initialValue={props.location.label || ''} />
         <GetLocation />
       </div>
       <div className="powered-by-google">
