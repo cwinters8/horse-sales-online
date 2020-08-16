@@ -223,6 +223,7 @@ const Horses = () => {
   const AdvancedSearch = () => {
     const [location, setLocation] = useState({});
 
+    // filter by location here?
     useEffect(() => {
       console.log('location value from Adv Search component:', location);
     }, [location]);

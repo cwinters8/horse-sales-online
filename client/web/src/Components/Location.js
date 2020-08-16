@@ -21,8 +21,9 @@ const Location = props => {
 
   // FUNCTIONS
   const setLocationState = data => {
+    console.log('location data:', data);
     props.setLocation({
-      value: data.id,
+      value: data.id || data.place_id,
       label: data.description
     });
   }
