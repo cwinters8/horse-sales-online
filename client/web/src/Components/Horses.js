@@ -227,7 +227,7 @@ const Horses = () => {
       console.log('location value from Adv Search component:', location);
     }, [location]);
 
-    // if (advancedSearch) {
+    if (advancedSearch) {
       return (
         <div className="advanced-search-container">
           <div>
@@ -251,9 +251,9 @@ const Horses = () => {
           </div>
         </div>
       );
-    // } else {
-    //   return null;
-    // }
+    } else {
+      return null;
+    }
   }
 
   // DOM
