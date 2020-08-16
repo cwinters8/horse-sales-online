@@ -34,7 +34,7 @@ const Horses = () => {
           title: data.title,
           image: data.images ? data.images[0] : null,
           price: data.price !== null ? data.price : "Contact seller",
-          // location: data.location,
+          location: data.location,
           gender: data.gender,
           breed: data.breed,
           filteredOn: []
@@ -129,9 +129,9 @@ const Horses = () => {
       return true;
     }
     // location
-    // if (horse.location.label.toLowerCase().includes(string)) {
-    //   return true;
-    // }
+    if (horse.location.label.toLowerCase().includes(string)) {
+      return true;
+    }
     // breed
     for (let i=0; i < horse.breed.length; i++) {
       if (horse.breed[i].toLowerCase().includes(string)) {
@@ -198,13 +198,13 @@ const Horses = () => {
         return <p>{props.price}</p>
       }
     }
-    // const HorseLocation = () => {
-    //   if (props.location) {
-    //     return <p>{props.location.label}</p>
-    //   } else {
-    //     return null;
-    //   }
-    // }
+    const HorseLocation = () => {
+      if (props.location) {
+        return <p>{props.location.label}</p>
+      } else {
+        return null;
+      }
+    }
     const link = `/horse/${props.id}`;
     return (
       <div className="horse-card">
@@ -214,7 +214,7 @@ const Horses = () => {
           <Price />
           <p>{props.breed.join(', ')}</p>
           <p>{props.gender}</p>
-          {/* <HorseLocation /> */}
+          <HorseLocation />
         </div>
       </div>
     );
@@ -266,7 +266,7 @@ const Horses = () => {
       image={horse.image}
       price={horse.price}
       gender={horse.gender}
-      // location={horse.location}
+      location={horse.location}
       breed={horse.breed}
     />
   );
