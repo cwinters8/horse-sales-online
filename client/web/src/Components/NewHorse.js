@@ -323,7 +323,7 @@ const NewHorse = props => {
         <NumberFormat className="horse-form-input form-control" id="price" thousandSeparator={true} decimalScale={0} allowNegative={false} prefix="$" onValueChange={values => setPrice(undefinedToNull(values.floatValue))} value={price} />
 
         {/* Location */}
-        <Location />
+        <Location setLocation={setLocation} location={location} />
 
         {/* Height */}
         <Label className="horse-form-label" for="height">Height (hh)</Label>
