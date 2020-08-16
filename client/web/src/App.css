@@ -346,3 +346,13 @@ main {
 .advanced-search-container label {
   margin-top: 5px;
 }
+
+.advanced-search-radius > div {
+  display: grid;
+  grid-template-columns: 80% 20%;
+}
+
+#radius-units {
+  margin-left: 10px;
+  border-radius: 5px;
+}

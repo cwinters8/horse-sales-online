@@ -222,11 +222,13 @@ const Horses = () => {
 
   const AdvancedSearch = () => {
     const [location, setLocation] = useState({});
+    const [radius, setRadius] = useState(50);
+    const [radiusUnits, setRadiusUnits] = useState('miles');
 
     // filter by location here?
     useEffect(() => {
-      console.log('location value from Adv Search component:', location);
-    }, [location]);
+      console.log('location data from Adv Search component:', location.value, radius, radiusUnits);
+    }, [location, radius, radiusUnits]);
 
     if (advancedSearch) {
       return (
@@ -237,6 +239,16 @@ const Horses = () => {
           </div>
           <div>
             <Location setLocation={setLocation} location={location} />
+          </div>
+          <div className="advanced-search-radius">
+            <Label for="radius">Search Radius</Label>
+            <div>
+              <Input id="radius" value={radius} onChange={event => setRadius(event.target.value)} />
+              <select name="radius-units" id="radius-units" value={radiusUnits} onChange={event => setRadiusUnits(event.target.value)}>
+                <option value="miles">mi</option>
+                <option value="kilometers">km</option>
+              </select>
+            </div>
           </div>
           <div>
             <Label for="price">Price</Label>
