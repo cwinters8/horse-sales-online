@@ -2,6 +2,7 @@ import React, {useEffect, useState, useRef} from 'react';
 import NumberFormat from 'react-number-format';
 import {Form, Label, Input, Button} from 'reactstrap';
 import Select from 'react-select';
+import getDistance from 'geolib/es/getDistance';
 
 import Location from './Location';
 
@@ -145,7 +146,7 @@ const Horses = () => {
     setBreedFilter(breedsToSearch);
     if (breedsToSearch && breedsToSearch.length) {
       const breedValues = breedsToSearch.map(breed => breed.value);
-      const horsesToFilter = filteredHorses.length ? filteredHorses : horses;
+      const horsesToFilter = determineHorsesToFilter();
       // update filteredHorses state based on matching breeds
       setFiltering(true);
       const matchedHorses = horsesToFilter.filter(horse => {
@@ -178,6 +179,18 @@ const Horses = () => {
         // if no horses have been filtered, display all
         setFiltering(false);
       }
+    }
+  }
+
+  const determineHorsesToFilter = () => {
+    return filteredHorses.length ? filteredHorses : horses;
+  }
+
+  const locationIsCountryOrState = locationTypes => {
+    if (locationTypes.includes('country') || locationTypes.includes('administrative_area_level_1')) {
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -220,15 +233,47 @@ const Horses = () => {
   }
 
   const AdvancedSearch = () => {
+    // STATE
     const [location, setLocation] = useState({});
+    // TODO: if user location type is country or state, hide radius component
     const [radius, setRadius] = useState(50);
     const [radiusUnits, setRadiusUnits] = useState('miles');
 
-    // filter by location here?
+    // HOOKS
+    // filter by location
     useEffect(() => {
-      console.log('location data from Adv Search component:', location.value, radius, radiusUnits);
+      // console.log('location data from Adv Search component:', location.value, radius, radiusUnits);
+      if (location.value) {
+        const userLocationTypes = location.value.placeTypes;
+        // TODO: if user location type is country or state, show horses that are in that country or state
+        // if user location type is not country or state, get the user's lat/lng and filter on that + radius
+        if (!locationIsCountryOrState(userLocationTypes)) {
+          const userLatLng = location.value.latLng;
+          const horsesToFilter = determineHorsesToFilter();
+          setFiltering(true);
+          const horsesFilteredByLocation = horsesToFilter.filter(horse => {
+            // if horse location type is not country or state, compare with user's lat/lng and radius
+            const horseLocationTypes = horse.location.value.placeTypes;
+            if (!locationIsCountryOrState(horseLocationTypes)) {
+              const horseLatLng = horse.location.value.latLng;
+              const kilometersBetween = getDistance(userLatLng, horseLatLng) / 1000;
+              console.log('kilometers between:', kilometersBetween);
+
+              return true;
+            } else {
+              return false;
+            }
+          });
+          setFilteredHorses(horsesFilteredByLocation);
+          // TODO: handle removing the filter etc
+        }
+      }
     }, [location, radius, radiusUnits]);
 
+    // FUNCTIONS
+
+
+    // DOM
     if (advancedSearch) {
       return (
         <div className="advanced-search-container">
