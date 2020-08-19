@@ -243,7 +243,7 @@ const Horses = () => {
           <div className="advanced-search-radius">
             <Label for="radius">Search Radius</Label>
             <div>
-              <Input id="radius" value={radius} onChange={event => setRadius(event.target.value)} />
+              <Input id="radius" type="number" value={radius} onChange={event => setRadius(event.target.value)} />
               <select name="radius-units" id="radius-units" value={radiusUnits} onChange={event => setRadiusUnits(event.target.value)}>
                 <option value="miles">mi</option>
                 <option value="kilometers">km</option>

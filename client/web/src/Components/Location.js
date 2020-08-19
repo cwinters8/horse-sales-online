@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Label, Button, Spinner} from 'reactstrap';
 import Select from 'react-select';
-import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import GooglePlacesAutocomplete, {geocodeByPlaceId, getLatLng} from 'react-google-places-autocomplete';
 
 // firebase
 import {firebaseApiKey} from '../Firebase';
@@ -21,10 +21,19 @@ const Location = props => {
 
   // FUNCTIONS
   const setLocationState = data => {
-    props.setLocation({
-      value: data.id || data.place_id,
-      label: data.description
+    const placeId = data.place_id || data.id;
+    geocodeByPlaceId(placeId).then(results => {
+      Promise.allSettled(results.map(result => {
+        return getLatLng(result);
+      })).then(latLngResults => {
+        const latLng = latLngResults[0].value;
+        props.setLocation({
+          value: {latLng, placeId},
+          label: data.description
+        });
+      });
     });
+    
   }
 
   const controller = new window.AbortController();
@@ -48,13 +57,16 @@ const Location = props => {
             const results = response.results;
             if (results.length > 0) {
               const placeOptions = [];
-              results.forEach((location, index) => {
+              results.forEach((location) => {
                 const splitAddress = location.formatted_address.split(', ');
                 // filter out anything long enough to be a full street address. Only want to return city/state/county/country etc.
                 if (splitAddress.length < 4) {
                   placeOptions.push({
                     label: location.formatted_address,
-                    value: location.place_id
+                    value: {
+                      latLng: location.geometry.location,
+                      placeId: location.place_id
+                    }
                   });
                 }
               });
@@ -126,7 +138,7 @@ const Location = props => {
         // FIXME: location Select not clearing after form submission
         return <Select className="horse-form-select horse-form-input places" options={places} onChange={onPlacesChange} value={props.location} placeholder="Select a location" />
       } else {
-        return <GooglePlacesAutocomplete inputClassName="form-control" onSelect={setLocationState} apiKey={firebaseApiKey} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} initialValue={props.location.label || ''} />
+        return <GooglePlacesAutocomplete inputClassName="form-control" onSelect={setLocationState} placeholder="Enter a city or zip code" autocompletionRequest={{types: ["(regions)"]}} initialValue={props.location.label || ''} />
       }
     }    
   }
