@@ -3,7 +3,6 @@ import NumberFormat from 'react-number-format';
 import {Form, Label, Input, Button} from 'reactstrap';
 import Select from 'react-select';
 
-// import Location from './Location';
 import Location from './Location';
 
 // firebase

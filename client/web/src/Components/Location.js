@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Label, Button, Spinner} from 'reactstrap';
 import Select from 'react-select';
-import GooglePlacesAutocomplete, {geocodeByPlaceId, getLatLng} from 'react-google-places-autocomplete';
+import GooglePlacesAutocomplete, {geocodeByPlaceId} from 'react-google-places-autocomplete';
 
 // firebase
 import {firebaseApiKey} from '../Firebase';
@@ -23,17 +23,22 @@ const Location = props => {
   const setLocationState = data => {
     const placeId = data.place_id || data.id;
     geocodeByPlaceId(placeId).then(results => {
-      Promise.allSettled(results.map(result => {
-        return getLatLng(result);
-      })).then(latLngResults => {
-        const latLng = latLngResults[0].value;
+      results.forEach(result => {
+        const location = result.geometry.location;
+        const latLng = {
+          lat: location.lat(),
+          lng: location.lng()
+        }
         props.setLocation({
-          value: {latLng, placeId},
+          value: {
+            latLng,
+            placeId,
+            placeTypes: result.types
+          },
           label: data.description
         });
       });
     });
-    
   }
 
   const controller = new window.AbortController();
@@ -65,7 +70,8 @@ const Location = props => {
                     label: location.formatted_address,
                     value: {
                       latLng: location.geometry.location,
-                      placeId: location.place_id
+                      placeId: location.place_id,
+                      placeTypes: location.types
                     }
                   });
                 }
