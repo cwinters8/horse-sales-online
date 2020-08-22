@@ -241,14 +241,19 @@ const Horses = () => {
 
     // HOOKS
     // filter by location
-    useEffect(() => {
+    // useEffect(() => {
+      
+    // }, [location, radius, radiusUnits]);
+
+    // FUNCTIONS
+    const filterOnLocation = locationFilter => {
       // console.log('location data from Adv Search component:', location.value, radius, radiusUnits);
-      if (location.value) {
-        const userLocationTypes = location.value.placeTypes;
+      if (locationFilter.value) {
+        const userLocationTypes = locationFilter.value.placeTypes;
         // TODO: if user location type is country or state, show horses that are in that country or state
         // if user location type is not country or state, get the user's lat/lng and filter on that + radius
         if (!locationIsCountryOrState(userLocationTypes)) {
-          const userLatLng = location.value.latLng;
+          const userLatLng = locationFilter.value.latLng;
           const horsesToFilter = determineHorsesToFilter();
           setFiltering(true);
           const horsesFilteredByLocation = horsesToFilter.filter(horse => {
@@ -264,14 +269,12 @@ const Horses = () => {
               return false;
             }
           });
+          console.log(horsesFilteredByLocation);
           setFilteredHorses(horsesFilteredByLocation);
           // TODO: handle removing the filter etc
         }
       }
-    }, [location, radius, radiusUnits]);
-
-    // FUNCTIONS
-
+    }
 
     // DOM
     if (advancedSearch) {
@@ -282,7 +285,7 @@ const Horses = () => {
             <Select className="horse-form-select" options={breeds} isMulti={true} onChange={filterOnBreed} value={breedFilter} />
           </div>
           <div>
-            <Location setLocation={setLocation} location={location} />
+            <Location setLocation={setLocation} location={location} onChange={filterOnLocation} />
           </div>
           <div className="advanced-search-radius">
             <Label for="radius">Search Radius</Label>

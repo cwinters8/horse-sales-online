@@ -29,14 +29,18 @@ const Location = props => {
           lat: location.lat(),
           lng: location.lng()
         }
-        props.setLocation({
+        const locationData = {
           value: {
             latLng,
             placeId,
             placeTypes: result.types
           },
           label: data.description
-        });
+        }
+        props.setLocation(locationData);
+        if (props.onChange) {
+          props.onChange(locationData);
+        }
       });
     });
   }
